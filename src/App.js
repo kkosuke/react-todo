@@ -16,6 +16,7 @@ const App = () =>{
   const [todoDetail, setTodoDetail] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [currentTodo, setCurrentTodo] = useState({});
+
   function onTodoInputChange(event){
     setTodoTitle(event.target.value)
   }
@@ -77,10 +78,8 @@ const App = () =>{
       margin: "20px"
     }}>
       <h1>TODOs</h1>
-      <section>
-        {isEditing ? (
-          <>
-          <h2>TODOを編集</h2>
+      {
+        isEditing ? (
           <form onSubmit={onEditSubmit}>
             <table>
               <tbody>
@@ -112,32 +111,27 @@ const App = () =>{
               </tbody>
             </table>
           </form>
-          </>
         ) : (
-          <>
-            <h2>TODOを作成</h2>
-            <form onSubmit={onTodoSubmit}>
-              <table>
-                <tbody>
-                  <tr>
-                    <th>タイトル</th>
-                    <td><input type="text" value={todoTitle} onChange={onTodoInputChange} /></td>
-                  </tr>
-                  <tr>
-                    <th>詳細</th>
-                    <td><textarea onChange={onTodoDetailTextareaChange} value={todoDetail}></textarea></td>
-                  </tr>
-                  <tr>
-                    <th>&nbsp;</th>
-                    <td><button type="submit">追加</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </form>
-          </>
-      )}
-
-      </section>
+          <form onSubmit={onTodoSubmit}>
+            <table>
+              <tbody>
+                <tr>
+                  <th>タイトル</th>
+                  <td><input type="text" value={todoTitle} onChange={onTodoInputChange} /></td>
+                </tr>
+                <tr>
+                  <th>詳細</th>
+                  <td><textarea onChange={onTodoDetailTextareaChange} value={todoDetail}></textarea></td>
+                </tr>
+                <tr>
+                  <th>&nbsp;</th>
+                  <td><button type="submit">追加</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+        )
+      }
       <section>
         <h2>あなたのTODO</h2>
         {todos.length ? (
