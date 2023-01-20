@@ -9,7 +9,7 @@ const SH2 = styled.h2`
   margin:0;
 `
 
-export default function Rule() {
+export const Rule = () => {
   return (
     <SSection>
       <SH2>説明/学習法</SH2>

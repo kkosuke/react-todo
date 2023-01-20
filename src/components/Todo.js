@@ -1,5 +1,5 @@
 import styled, {css} from "styled-components"
-import TodoStatus from "./TodoStatus";
+import {TodoStatus} from "../constants/TodoStatus";
 
 const SButtonMixin = css`
   font-size: 12px;
@@ -31,12 +31,12 @@ const STodoItem = styled.li`
     opacity: 0.2;
   `}
 `
-
-
-export default function Todo(props) {
+export const Todo = (props) =>{
   return (
     <STodoItem Done={props.todo.status === 2}>
       <dl>
+        <dt>ID</dt>
+        <dd>{props.todo.id}</dd>
         <dt>ステータス</dt>
         <dd>{TodoStatus[props.todo.status]}</dd>
         <dt>タイトル</dt>
