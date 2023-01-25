@@ -26,7 +26,7 @@ const App = () =>{
         title: newTodoTitle.trim(),
         detail: newTodoDetail.trim(),
       }
-      console.log(newTodo);
+      // console.log(newTodo);
       setTodoList([...todoList,newTodo]);
       setNewTodoTitle("");
       setNewTodoDetail("");
@@ -40,10 +40,8 @@ const App = () =>{
 
   // 押下したTODO以外を残す
   const onClickDelete = (id) => {
-    console.log(todoList);
-    const removeItem = todoList.filter((todo) => {
-      return todo.id !== id;
-    });
+    // console.log(todoList);
+    const removeItem = todoList.filter((todo) => todo.id !== id);
     setTodoList(removeItem);
   }
   const onClickEdit = (todo) =>{
@@ -56,9 +54,7 @@ const App = () =>{
   }
   const onEditSubmit = event => {
     event.preventDefault();
-    const updatedItem = todoList.map((todo) => {
-      return todo.id === currentTodo.id ? currentTodo : todo;
-    });
+    const updatedItem = todoList.map((todo) => todo.id === currentTodo.id ? currentTodo : todo);
     setIsEditing(false);
     setTodoList(updatedItem);
   }
@@ -137,20 +133,7 @@ const App = () =>{
           <p>TODOを入力してください。</p>
         )}
       </section>
-
       <Rule />
-
-      <section>
-        <h2>やれたらいいな</h2>
-        <ul>
-          <li>todoの項目を用意に増やせるようになる</li>
-          <li>todoの編集のキャンセル</li>
-          <li>todoリストのその場で修正</li>
-          <li>並び替え</li>
-          <li>絞り込み検索（完全一致、含む、あいまい）</li>
-          <li>csvエクスポート ダウンロード、インポート</li>
-        </ul>
-      </section>
     </div>
   )
 }
