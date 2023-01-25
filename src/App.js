@@ -49,7 +49,7 @@ const App = () =>{
     setCurrentTodo(todo);
   }
   const onEditTodoStatus = event => {
-    const thisTodo = {...currentTodo, ...{status:event.target.value}}
+    const thisTodo = {...currentTodo, status:event.target.value}
     setCurrentTodo(thisTodo);
   }
   const onEditSubmit = event => {
