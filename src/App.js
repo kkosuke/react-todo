@@ -8,28 +8,36 @@ import {TodoStatus} from "./constants/TodoStatus";
 const SLabel = styled.label`
   cursor: pointer;
 `
+const initTodo = {
+  title: undefined,
+  detail: undefined
+};
+
 const App = () =>{
   const [todoList, setTodoList] = useState(() => localStorage.getItem("todoList") ? JSON.parse(localStorage.getItem("todoList")): []);
-  const [newTodoTitle, setNewTodoTitle] = useState("");
-  const [newTodoDetail, setNewTodoDetail] = useState("");
+  const [newTodo, setNewTodo] = useState(initTodo);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTodo, setCurrentTodo] = useState({});
 
-  const onTodoInputChange = event => setNewTodoTitle(event.target.value);
-  const onTodoDetailTextareaChange = event => setNewTodoDetail(event.target.value)
+  const onTodoInputChange = event => setNewTodo({
+    ...newTodo,
+    title: event.target.value
+  });
+  const onTodoDetailTextareaChange = event => setNewTodo({
+    ...newTodo,
+    detail: event.target.value
+  })
   const onTodoSubmit = event => {
     event.preventDefault();
-    if (newTodoTitle.trim()){
-      const newTodo = {
+    if (newTodo.title.trim()){
+      const _newTodo = {
         id: uuidv4(),
         status: "notStarted",
-        title: newTodoTitle.trim(),
-        detail: newTodoDetail.trim(),
+        title: newTodo.title.trim(),
+        detail: newTodo.detail.trim(),
       }
-      // console.log(newTodo);
-      setTodoList([...todoList,newTodo]);
-      setNewTodoTitle("");
-      setNewTodoDetail("");
+      setTodoList([...todoList, _newTodo]);
+      setNewTodo(initTodo);
     } else {
       alert('TODOを入力してください');
     }
@@ -102,11 +110,11 @@ const App = () =>{
               <tbody>
                 <tr>
                   <th>タイトル</th>
-                  <td><input type="text" value={newTodoTitle} onChange={onTodoInputChange} /></td>
+                  <td><input type="text" value={newTodo.title} onChange={onTodoInputChange} /></td>
                 </tr>
                 <tr>
                   <th>詳細</th>
-                  <td><textarea onChange={onTodoDetailTextareaChange} value={newTodoDetail}></textarea></td>
+                  <td><textarea onChange={onTodoDetailTextareaChange} value={newTodo.detail}></textarea></td>
                 </tr>
                 <tr>
                   <th>&nbsp;</th>
