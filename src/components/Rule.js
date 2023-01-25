@@ -17,7 +17,7 @@ export const Rule = () => {
   return (
     <>
       <hr />
-      <button onClick={toggleShow}>メモを見る</button>
+      <button onClick={toggleShow}>開発用のメモを見る</button>
       {isShow && (
         <>
           <SSection>
