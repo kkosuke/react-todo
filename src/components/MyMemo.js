@@ -11,16 +11,22 @@ const SH2 = styled.h2`
   margin:0;
 `
 
-export const Rule = () => {
+export const MyMemo = () => {
   const [isShow, setIsShow] = useState(false);
   const toggleShow = () =>{ setIsShow(!isShow)}
   return (
     <>
       <hr />
-      <button onClick={toggleShow}>開発用のメモを見る</button>
+      <button onClick={toggleShow} className="rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">開発用のメモを見る</button>
       {isShow && (
         <>
           <SSection>
+            <SH2>icon, tailwind</SH2>
+            <ul>
+              <li><a href="https://heroicons.com/">https://heroicons.com/</a></li>
+              <li><a href="https://tailwindui.com/?ref=top">https://tailwindui.com/?ref=top</a></li>
+              <li><a href="https://zenn.dev/knaka0209/books/9e86ccb888758c/viewer/663286">https://zenn.dev/knaka0209/books/9e86ccb888758c/viewer/663286</a></li>
+            </ul>
             <SH2>説明/学習法</SH2>
             <p>TODOリストをつくってみる。ReactHooksを使う。</p>
             <dl>
