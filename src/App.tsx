@@ -3,20 +3,17 @@ import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { MyMemo } from "./components/MyMemo";
 import { Todo } from "./components/Todo";
+import { TodoFilter } from "./components/TodoFilter";
 import { TodoStatus } from "./constants/TodoStatus";
 import "./index.css";
 
-const initTodo = {
+const inputClassName =
+  "block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+
+const initTodo: { title: string; detail: string } = {
   title: "",
   detail: "",
 };
-
-const buttonGroupButtonClassNameL =
-  "px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white";
-const buttonGroupButtonClassNameM =
-  "px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white";
-const buttonGroupButtonClassNameR =
-  "px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white";
 
 const App = () => {
   const [todoList, setTodoList] = useState(() =>
@@ -24,10 +21,7 @@ const App = () => {
       ? JSON.parse(localStorage.getItem("todoList") || "")
       : []
   );
-  const [newTodo, setNewTodo] = useState<{
-    title: string;
-    detail: string;
-  }>(initTodo);
+  const [newTodo, setNewTodo] = useState(initTodo);
   const [isEditing, setIsEditing] = useState(false);
   const [currentTodo, setCurrentTodo] = useState<{
     id?: string;
@@ -35,6 +29,11 @@ const App = () => {
     title?: string;
     detail?: string;
   }>({});
+  const [currentList, setCurrentList] = useState(todoList);
+  const todoStatusKeys = ["", "notStarted", "doing", "done"] as const;
+  type todoStatusType = typeof todoStatusKeys[number];
+  const [filterValue, setFilterValue] = useState<todoStatusType>("");
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const onTodoInputChange = (event: any) =>
     setNewTodo({
@@ -61,13 +60,17 @@ const App = () => {
       alert("TODOを入力してください");
     }
   };
-  const sortTodo = (status: string) => {
-    console.log("sortTodo", status);
-  };
-  useEffect(() => {
-    localStorage.setItem("todoList", JSON.stringify(todoList));
-  }, [todoList]);
 
+  // 絞り込みボタン押下時
+  const onFilterButtonClick = (status: todoStatusType) => {
+    const newFilterValue = status.length ? status : "";
+    const newCurrentList = !newFilterValue
+      ? todoList
+      : todoList.filter((todo: any) => todo.status === newFilterValue);
+    setFilterValue(newFilterValue);
+    setCurrentList(newCurrentList);
+    setIsFiltering(newFilterValue !== "");
+  };
   // 削除
   const onClickDelete = (id: number) => {
     // 押下したTODO以外を残す
@@ -90,6 +93,12 @@ const App = () => {
     setIsEditing(false);
     setTodoList(updatedItem);
   };
+
+  useEffect(() => {
+    localStorage.setItem("todoList", JSON.stringify(todoList));
+    onFilterButtonClick(filterValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todoList]);
 
   return (
     <div
@@ -132,7 +141,7 @@ const App = () => {
                       type="text"
                       value={currentTodo.title}
                       onChange={onTodoInputChange}
-                      className="block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+                      className={inputClassName}
                     />
                   </td>
                 </tr>
@@ -142,7 +151,7 @@ const App = () => {
                     <textarea
                       onChange={onTodoDetailTextareaChange}
                       value={currentTodo.detail}
-                      className="block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+                      className={inputClassName}
                     ></textarea>
                   </td>
                 </tr>
@@ -172,7 +181,7 @@ const App = () => {
                   <td>
                     <label className="relative block">
                       <input
-                        className="block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+                        className={inputClassName}
                         placeholder="タイトルを入力"
                         type="text"
                         name="search"
@@ -188,7 +197,7 @@ const App = () => {
                     <textarea
                       onChange={onTodoDetailTextareaChange}
                       value={newTodo.detail}
-                      className="block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+                      className={inputClassName}
                       placeholder="詳細情報を入力してください"
                     ></textarea>
                   </td>
@@ -210,29 +219,11 @@ const App = () => {
         </>
       )}
 
-      <div className="inline-flex rounded-md shadow-sm mt-4" role="group">
-        <button
-          type="button"
-          className={buttonGroupButtonClassNameL}
-          onClick={() => sortTodo("notStarted")}
-        >
-          未着手
-        </button>
-        <button
-          type="button"
-          className={buttonGroupButtonClassNameM}
-          onClick={() => sortTodo("doing")}
-        >
-          着手
-        </button>
-        <button
-          type="button"
-          className={buttonGroupButtonClassNameR}
-          onClick={() => sortTodo("done")}
-        >
-          完了
-        </button>
-      </div>
+      <TodoFilter
+        onClickButton={onFilterButtonClick}
+        filterValue={filterValue}
+        isFiltering={isFiltering}
+      />
 
       <section className="mt-5">
         <div className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg">
@@ -241,7 +232,6 @@ const App = () => {
               TODO一覧
             </h2>
           </div>
-          {todoList.length}
           <div className="border-t border-gray-200">
             <table className="w-full">
               <thead>
@@ -254,20 +244,26 @@ const App = () => {
                 </tr>
               </thead>
               <tbody>
-                {todoList.length ? (
+                {currentList.length ? (
                   <>
-                    {todoList.map((todo: any) => (
+                    {currentList.map((todo: any) => (
                       <Todo
                         key={todo.id}
                         todo={todo}
                         onClickEdit={onClickEdit}
                         onClickDelete={onClickDelete}
+                        filterValue={filterValue}
                       />
                     ))}
                   </>
                 ) : (
                   <tr>
-                    <td colSpan={5}>TODOを入力してください。</td>
+                    <td colSpan={5} className="px-4 py-5 sm:px-6 text-center">
+                      {isFiltering
+                        ? // @ts-ignore
+                          `${TodoStatus[filterValue]}のTODOはありません。`
+                        : "TODOを入力してください。"}
+                    </td>
                   </tr>
                 )}
               </tbody>

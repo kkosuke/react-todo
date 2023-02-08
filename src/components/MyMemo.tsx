@@ -48,8 +48,12 @@ export const MyMemo = () => {
             <h2 className="font-bold text-lg mt-4">説明/学習法</h2>
             <p className="mt-4">TODOリストをつくってみる。ReactHooksを使う。</p>
             <p>・ReactHooksを使う</p>
-            <p className="line-through">・TypeScriptで書く</p>
-            <p>→ anyを使用しても良いので型エラーを解消する</p>
+            <p className="line-through">
+              ・TypeScriptで書く（全てではないけど…）
+            </p>
+            <p className="line-through">
+              → anyを使用しても良いので型エラーを解消する
+            </p>
             <p>▼TODOリスト内の各TODOにほしい要素</p>
             <p className="line-through">　・ID(連番もしくはuuidを設定)</p>
             <p className="line-through">　・タイトル</p>
@@ -61,14 +65,18 @@ export const MyMemo = () => {
             <p className="line-through">　・TODOの追加</p>
             <p className="line-through">　・TODOの削除</p>
             <p className="line-through">　・TODOの編集機能</p>
-            <p>　・絞り込み機能(ID、期限、ステータスで絞り込み)</p>
+            <p>　・絞り込み機能(IDで絞り込み)</p>
+            <p>　・絞り込み機能(期限で絞り込み)</p>
+            <p className="line-through">
+              　・絞り込み機能(ステータスで絞り込み)
+            </p>
             <p>▼余裕があれば以下のようなカスタマイズをする</p>
             <p>　・anyを使わずに型付けを行なう</p>
             <p>
               　・期限の追加などの要素追加（期限、内容、作成日、更新日など）
             </p>
             <p>　・ソート(ID、期限)</p>
-            <p>　・ステータス変更でスタイル変更</p>
+            <p className="line-through">　・ステータス変更でスタイル変更</p>
             <p>　・コンポーネント化してみる</p>
             <p className="line-through">
               　・MaterialUIやChakraUI、もしくはTailwind CSSを使ってみる

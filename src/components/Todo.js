@@ -2,7 +2,7 @@ import {TodoStatus} from "../constants/TodoStatus";
 
 export const Todo = (props) =>{
   return (
-      <tr>
+      <tr className={ props.todo.status === "done" && props.filterValue === "" && "opacity-20"}>
         <td className="px-3.5 py-1.5">{props.todo.id}</td>
         <td className="px-3.5 py-1.5">{TodoStatus[props.todo.status]}</td>
         <td className="px-3.5 py-1.5">{props.todo.title}</td>
