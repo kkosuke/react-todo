@@ -65,7 +65,7 @@ export const MyMemo = () => {
             <p className="line-through">　・TODOの追加</p>
             <p className="line-through">　・TODOの削除</p>
             <p className="line-through">　・TODOの編集機能</p>
-            <p>　・絞り込み機能(IDで絞り込み)</p>
+            <p className="line-through">　・絞り込み機能(IDで絞り込み)</p>
             <p>　・絞り込み機能(期限で絞り込み)</p>
             <p className="line-through">
               　・絞り込み機能(ステータスで絞り込み)

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 // @ts-ignore
 import { v4 as uuidv4 } from "uuid";
+import "./index.css";
+
+import { TodoStatus } from "./constants/TodoStatus";
 import { MyMemo } from "./components/MyMemo";
 import { Todo } from "./components/Todo";
-import { TodoFilter } from "./components/TodoFilter";
-import { TodoStatus } from "./constants/TodoStatus";
-import "./index.css";
+import { FilterByStatus } from "./components/FilterByStatus";
+import { FilterByID } from "./components/FilterByID";
 
 const inputClassName =
   "block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
@@ -30,9 +32,13 @@ const App = () => {
     detail?: string;
   }>({});
   const [currentList, setCurrentList] = useState(todoList);
+  // ステータスでフィルター
   const todoStatusKeys = ["", "notStarted", "doing", "done"] as const;
   type todoStatusType = typeof todoStatusKeys[number];
-  const [filterValue, setFilterValue] = useState<todoStatusType>("");
+  const [filterStatusValue, setFilterStatusValue] =
+    useState<todoStatusType>("");
+  // ID名でフィルター
+  const [filterIdValue, setFilterIdValue] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
 
   const onTodoInputChange = (event: any) =>
@@ -61,15 +67,31 @@ const App = () => {
     }
   };
 
+  // ID絞り込みinput操作時
+  const onFilterInputChange = (event: any) => {
+    const newFilterIdValue = event.target.value.length
+      ? event.target.value.trim().match(/[^\s]+/g)[0]
+      : "";
+    const newCurrentList = !newFilterIdValue
+      ? todoList
+      : todoList.filter(
+          (todo: any) =>
+            todo.id.toLowerCase().indexOf(newFilterIdValue.toLowerCase()) !== -1
+        );
+    setFilterIdValue(newFilterIdValue);
+    setCurrentList(newCurrentList);
+    setIsFiltering(newFilterIdValue !== "");
+  };
+
   // 絞り込みボタン押下時
   const onFilterButtonClick = (status: todoStatusType) => {
-    const newFilterValue = status.length ? status : "";
-    const newCurrentList = !newFilterValue
+    const newFilterStatusValue = status.length ? status : "";
+    const newCurrentList = !newFilterStatusValue
       ? todoList
-      : todoList.filter((todo: any) => todo.status === newFilterValue);
-    setFilterValue(newFilterValue);
+      : todoList.filter((todo: any) => todo.status === newFilterStatusValue);
+    setFilterStatusValue(newFilterStatusValue);
     setCurrentList(newCurrentList);
-    setIsFiltering(newFilterValue !== "");
+    setIsFiltering(newFilterStatusValue !== "");
   };
   // 削除
   const onClickDelete = (id: number) => {
@@ -96,7 +118,7 @@ const App = () => {
 
   useEffect(() => {
     localStorage.setItem("todoList", JSON.stringify(todoList));
-    onFilterButtonClick(filterValue);
+    onFilterButtonClick(filterStatusValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todoList]);
 
@@ -110,7 +132,7 @@ const App = () => {
       <h1>TODO</h1>
       {isEditing ? (
         <>
-          <h2>新規TODOを編集</h2>
+          <h2>TODOを編集</h2>
           <form onSubmit={onEditSubmit}>
             <table>
               <tbody>
@@ -219,9 +241,16 @@ const App = () => {
         </>
       )}
 
-      <TodoFilter
+      <FilterByStatus
         onClickButton={onFilterButtonClick}
-        filterValue={filterValue}
+        filterStatusValue={filterStatusValue}
+        isFiltering={isFiltering}
+      />
+
+      <FilterByID
+        inputClassName={inputClassName}
+        onInputChange={onFilterInputChange}
+        filterIdValue={filterIdValue}
         isFiltering={isFiltering}
       />
 
@@ -229,7 +258,7 @@ const App = () => {
         <div className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6">
             <h2 className="text-lg font-medium leading-6 text-gray-900">
-              TODO一覧
+              TODO一覧 （ 絞り込み中？ : {isFiltering ? "true" : "false"}）
             </h2>
           </div>
           <div className="border-t border-gray-200">
@@ -252,7 +281,7 @@ const App = () => {
                         todo={todo}
                         onClickEdit={onClickEdit}
                         onClickDelete={onClickDelete}
-                        filterValue={filterValue}
+                        filterStatusValue={filterStatusValue}
                       />
                     ))}
                   </>
@@ -261,7 +290,7 @@ const App = () => {
                     <td colSpan={5} className="px-4 py-5 sm:px-6 text-center">
                       {isFiltering
                         ? // @ts-ignore
-                          `${TodoStatus[filterValue]}のTODOはありません。`
+                          `${TodoStatus[filterStatusValue]}のTODOはありません。`
                         : "TODOを入力してください。"}
                     </td>
                   </tr>
