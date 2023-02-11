@@ -27,7 +27,7 @@ export const FilterByStatus = (props: any) => {
           </svg>
           ステータスで絞り込み
         </dt>
-        <dd className="inline-flex rounded-md shadow-sm mt-4" role="group">
+        <dd className="inline-flex rounded-md shadow-sm" role="group">
           <button
             type="button"
             className={

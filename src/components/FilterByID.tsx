@@ -1,7 +1,9 @@
 export const FilterByID = (props: any) => {
+  const inputClassName =
+    "block bg-white w-full border ml-2 border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
   return (
     <>
-      <dl>
+      <dl className="mt-4">
         <dt className="inline-block mr-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -14,14 +16,14 @@ export const FilterByID = (props: any) => {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"
+              d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"
             />
           </svg>
           IDで絞り込み
         </dt>
-        <dd className="inline-flex rounded-md shadow-sm mt-4" role="group">
+        <dd className="inline-flex" role="group">
           <input
-            className={props.inputClassName}
+            className={inputClassName}
             placeholder="IDを入力"
             type="text"
             name="idSearch"
