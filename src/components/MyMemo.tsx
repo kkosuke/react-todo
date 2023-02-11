@@ -47,7 +47,7 @@ export const MyMemo = () => {
             </ul>
             <h2 className="font-bold text-lg mt-4">説明/学習法</h2>
             <p className="mt-4">TODOリストをつくってみる。ReactHooksを使う。</p>
-            <p>・ReactHooksを使う</p>
+            <p className="line-through">・ReactHooksを使う</p>
             <p className="line-through">
               ・TypeScriptで書く（全てではないけど…）
             </p>
