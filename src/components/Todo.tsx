@@ -13,7 +13,13 @@ export const Todo = (props: any) => {
       <td className="px-3.5 py-1.5">{props.todo.id}</td>
       <td className="px-3.5 py-1.5">{TodoStatus[props.todo.status]}</td>
       <td className="px-3.5 py-1.5">{props.todo.title}</td>
-      <td className="px-3.5 py-1.5">{props.todo.detail}</td>
+      <td
+        className={
+          props.todo.detail ? "px-3.5 py-1.5" : "px-3.5 py-1.5 text-gray-400"
+        }
+      >
+        {props.todo.detail ? props.todo.detail : "…無いようです"}
+      </td>
       <td className="px-3.5 py-1.5">{displayDate(props.todo.deadline)}</td>
       <td className="px-3.5 py-1.5">{displayDate(props.todo.createdAt)}</td>
       <td className="px-3.5 py-1.5">{displayDate(props.todo.updateAt)}</td>

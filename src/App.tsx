@@ -314,7 +314,7 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>詳細</th>
+                  <th>内容</th>
                   <td>
                     <textarea
                       onChange={onEditTodoTextarea}
@@ -387,7 +387,7 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>詳細</th>
+                  <th>内容</th>
                   <td>
                     <textarea
                       onChange={onTodoDetailTextareaChange}
@@ -467,7 +467,7 @@ const App = () => {
                   <th className="px-3.5 py-1.5">ID</th>
                   <th className="px-3.5 py-1.5">ステータス</th>
                   <th className="px-3.5 py-1.5">タイトル</th>
-                  <th className="px-3.5 py-1.5">詳細</th>
+                  <th className="px-3.5 py-1.5">内容</th>
                   <th className="px-3.5 py-1.5">
                     <button
                       type="button"
