@@ -1,17 +1,7 @@
 import { TodoStatus } from "../constants/TodoStatus";
+import { displayDate } from "../function/Index";
 
 export const Todo = (props: any) => {
-  let thisDeadline = "なし";
-  if (props.todo.deadline) {
-    const date = new Date(props.todo.deadline);
-    thisDeadline = date.toLocaleTimeString([], {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
   return (
     <tr
       className={
@@ -22,9 +12,11 @@ export const Todo = (props: any) => {
     >
       <td className="px-3.5 py-1.5">{props.todo.id}</td>
       <td className="px-3.5 py-1.5">{TodoStatus[props.todo.status]}</td>
-      <td className="px-3.5 py-1.5">{thisDeadline}</td>
       <td className="px-3.5 py-1.5">{props.todo.title}</td>
       <td className="px-3.5 py-1.5">{props.todo.detail}</td>
+      <td className="px-3.5 py-1.5">{displayDate(props.todo.deadline)}</td>
+      <td className="px-3.5 py-1.5">{displayDate(props.todo.createdAt)}</td>
+      <td className="px-3.5 py-1.5">{displayDate(props.todo.updateAt)}</td>
       <td className="px-3.5 py-1.5">
         <button
           className="rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mr-3"

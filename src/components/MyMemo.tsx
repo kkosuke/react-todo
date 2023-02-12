@@ -39,9 +39,7 @@ export const MyMemo = () => {
             <h2 className="font-bold text-lg mt-4">説明/学習法</h2>
             <p className="mt-4">TODOリストをつくってみる。ReactHooksを使う。</p>
             <p className="line-through">・ReactHooksを使う</p>
-            <p className="line-through">
-              ・TypeScriptで書く（全てではないけど…）
-            </p>
+            <p className="line-through">・TypeScriptで書く</p>
             <p className="line-through">
               → anyを使用しても良いので型エラーを解消する
             </p>
@@ -78,12 +76,16 @@ export const MyMemo = () => {
           <section className="mt-4 p-4 rounded-lg bg-gray-100">
             <h2>やれたらいいな</h2>
             <ul>
-              <li>todoの項目を簡単に増やせるようになる</li>
-              <li>todoの編集のキャンセル</li>
+              <li className="line-through">
+                todoの項目を簡単に増やせるようになる
+              </li>
+              <li className="line-through">todoの編集のキャンセル</li>
               <li>todoリストのその場で修正</li>
               <li>並び替え</li>
-              <li>絞り込み検索（完全一致、含む、あいまい）</li>
+              <li className="line-through">絞り込み検索（完全一致、含む）</li>
+              <li>絞り込み検索（あいまい）</li>
               <li>csvエクスポート ダウンロード、インポート</li>
+              <li>日にち制御を簡単に</li>
             </ul>
           </section>
         </>

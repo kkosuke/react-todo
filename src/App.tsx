@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import "./index.css";
 
 import { TodoStatus } from "./constants/TodoStatus";
+import { filterDateSetting } from "./function/Index";
+
 import { MyMemo } from "./components/MyMemo";
 import { Todo } from "./components/Todo";
 import { FilterByStatus } from "./components/FilterByStatus";
@@ -18,6 +20,8 @@ const App = () => {
     status: todoStatusType;
     title: string;
     detail: string;
+    createdAt: Date;
+    updateAt: Date;
     deadline: Date;
   };
 
@@ -26,14 +30,16 @@ const App = () => {
   const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
   let defaultDeadlineEnd = new Date();
   defaultDeadlineEnd.setDate(defaultDeadlineEnd.getDate() + 7);
-  defaultDeadlineEnd.setMinutes(0);
-  defaultDeadlineEnd = new Date(defaultDeadlineEnd);
+  defaultDeadlineEnd.setMinutes(0); // 初期期限の分は0にしたい
+
   const initTodo: todoType = {
     id: "",
     status: "",
     title: "",
     detail: "",
-    deadline: defaultDeadlineEnd,
+    createdAt: new Date(),
+    updateAt: new Date(),
+    deadline: new Date(defaultDeadlineEnd),
   };
 
   const [todoList, setTodoList] = useState(() =>
@@ -50,9 +56,10 @@ const App = () => {
   // ID名でフィルター
   const [filterIdValue, setFilterIdValue] = useState("");
   // 日にちでフィルター
+  // 時間まで分秒刻みで設定されるので、不都合がある…
   const [filterDateValues, setFilterDateValues] = useState([
-    new Date(),
-    defaultDeadlineEnd,
+    filterDateSetting(new Date(), 0),
+    filterDateSetting(new Date(defaultDeadlineEnd), 1),
   ]);
   const [isFiltering, setIsFiltering] = useState(false);
 
@@ -85,6 +92,7 @@ const App = () => {
         ...newTodo,
         id: uuidv4(),
         status: "notStarted",
+        createdAt: new Date(),
       };
       setTodoList([...todoList, _newTodo]);
       setNewTodo(initTodo);
@@ -98,8 +106,11 @@ const App = () => {
   //-----------------------------
   const onClickEdit = (todo: todoType) => {
     setIsEditing(true);
-    setCurrentTodo({ ...initTodo, ...todo }); // 初期のデータからの場合、期限などがない場合がある
+    setCurrentTodo({ ...initTodo, ...todo }); // 初期のデータからの場合、期限などがない場合があるので初期値に上書き
   };
+  // 編集のキャンセル
+  const onClickEditCancel = () => setIsEditing(false);
+
   const onEditTodoStatus = (event: any) =>
     setCurrentTodo({ ...currentTodo, status: event.target.value });
   const onEditTodoTitle = (event: any) =>
@@ -118,10 +129,15 @@ const App = () => {
   // 編集完了ボタンを押下したら、操作中のidを既存のtodoと差し替える
   const onEditSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    const newCurrentTodo = {
+      ...currentTodo,
+      updateAt: new Date(),
+    };
     const updatedItem = todoList.map((todo: todoType) =>
-      todo.id === currentTodo.id ? currentTodo : todo
+      todo.id === currentTodo.id ? newCurrentTodo : todo
     );
     setIsEditing(false);
+    setCurrentTodo(newCurrentTodo);
     setTodoList(updatedItem);
   };
 
@@ -167,8 +183,8 @@ const App = () => {
     newFilterDateValues[idx].setMonth(m);
     newFilterDateValues[idx].setDate(d);
     setFilterDateValues([
-      new Date(newFilterDateValues[0]),
-      new Date(filterDateValues[1]),
+      filterDateSetting(new Date(newFilterDateValues[0]), 0),
+      filterDateSetting(new Date(filterDateValues[1]), 1),
     ]);
   };
 
@@ -216,8 +232,8 @@ const App = () => {
     const newCurrentList = todoList.filter((todo: todoType) => {
       if (todo.deadline) {
         return (
-          new Date(todo.deadline) >= filterDateValues[0] &&
-          new Date(todo.deadline) <= filterDateValues[1]
+          new Date(todo.deadline) >= new Date(filterDateValues[0]) &&
+          new Date(filterDateValues[1]) >= new Date(todo.deadline)
         );
       } else {
         return true;
@@ -300,6 +316,13 @@ const App = () => {
                       className="mt-4 w-60 rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       TODOを更新
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-4 ml-4 px-3.5 py-1.5 text-base font-semibold leading-7 text-indigo-600 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      onClick={onClickEditCancel}
+                    >
+                      キャンセル
                     </button>
                   </td>
                 </tr>
@@ -408,15 +431,18 @@ const App = () => {
               TODO一覧 （ 絞り込み中？ : {isFiltering ? "true" : "false"}）
             </h2>
           </div>
+          {currentList.length}
           <div className="border-t border-gray-200">
-            <table className="w-full">
+            <table className="w-full text-left">
               <thead>
-                <tr>
+                <tr className="bg-gray-100">
                   <th className="px-3.5 py-1.5">ID</th>
                   <th className="px-3.5 py-1.5">ステータス</th>
-                  <th className="px-3.5 py-1.5">期限</th>
                   <th className="px-3.5 py-1.5">タイトル</th>
                   <th className="px-3.5 py-1.5">詳細</th>
+                  <th className="px-3.5 py-1.5">期限</th>
+                  <th className="px-3.5 py-1.5">作成</th>
+                  <th className="px-3.5 py-1.5">更新</th>
                   <th className="px-3.5 py-1.5"></th>
                 </tr>
               </thead>
@@ -435,7 +461,7 @@ const App = () => {
                   </>
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-4 py-5 sm:px-6 text-center">
+                    <td colSpan={8} className="px-4 py-5 sm:px-6 text-center">
                       {isFiltering
                         ? `${TodoStatus[filterStatusValue]}のTODOはありません。`
                         : "TODOを入力してください。"}
