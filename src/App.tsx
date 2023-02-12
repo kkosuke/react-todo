@@ -62,6 +62,9 @@ const App = () => {
     filterDateSetting(new Date(defaultDeadlineEnd), 1),
   ]);
   const [isFiltering, setIsFiltering] = useState(false);
+  const [isSortingDeadline, setIsSortingDeadline] = useState<
+    "none" | true | false
+  >("none");
 
   //-----------------------------
   // 新規のTODO作成時
@@ -98,6 +101,16 @@ const App = () => {
       setNewTodo(initTodo);
     } else {
       alert("TODOを入力してください");
+    }
+  };
+
+  //-----------------------------
+  // 削除
+  //-----------------------------
+  const onClickDelete = (id: string) => {
+    if (window.confirm("Do you really want to delete?")) {
+      const removeItem = todoList.filter((todo: todoType) => todo.id !== id); // 押下したTODO以外を残す
+      setTodoList(removeItem);
     }
   };
 
@@ -189,16 +202,6 @@ const App = () => {
   };
 
   //-----------------------------
-  // 削除
-  //-----------------------------
-  const onClickDelete = (id: string) => {
-    if (window.confirm("Do you really want to delete?")) {
-      const removeItem = todoList.filter((todo: todoType) => todo.id !== id); // 押下したTODO以外を残す
-      setTodoList(removeItem);
-    }
-  };
-
-  //-----------------------------
   // 変換
   //-----------------------------
   const generateDeadline = (
@@ -229,7 +232,7 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem("todoList", JSON.stringify(todoList));
     onFilterButtonClick(filterStatusValue);
-    const newCurrentList = todoList.filter((todo: todoType) => {
+    let newCurrentList = todoList.filter((todo: todoType) => {
       if (todo.deadline) {
         return (
           new Date(todo.deadline) >= new Date(filterDateValues[0]) &&
@@ -239,9 +242,34 @@ const App = () => {
         return true;
       }
     });
+    // 期限で絞り込み本体
+    if (isSortingDeadline !== "none") {
+      newCurrentList.sort(function (a: todoType, b: todoType) {
+        if (isSortingDeadline) {
+          return a.deadline > b.deadline ? 1 : -1;
+        } else {
+          return a.deadline > b.deadline ? -1 : 1;
+        }
+      });
+    }
     setCurrentList(newCurrentList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todoList, filterDateValues]);
+  }, [todoList, filterDateValues, isSortingDeadline]);
+
+  // 期限で絞り込み切り替え
+  const onClickSortDeadline = () => {
+    switch (isSortingDeadline) {
+      case true:
+        setIsSortingDeadline(false);
+        break;
+      case false:
+        setIsSortingDeadline("none");
+        break;
+      case "none":
+        setIsSortingDeadline(true);
+        break;
+    }
+  };
 
   return (
     <div
@@ -428,10 +456,10 @@ const App = () => {
         <div className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg">
           <div className="px-4 py-5 sm:px-6">
             <h2 className="text-lg font-medium leading-6 text-gray-900">
-              TODO一覧 （ 絞り込み中？ : {isFiltering ? "true" : "false"}）
+              TODO一覧　全{todoList.length}件（{currentList.length}件表示中）
             </h2>
           </div>
-          {currentList.length}
+
           <div className="border-t border-gray-200">
             <table className="w-full text-left">
               <thead>
@@ -440,7 +468,20 @@ const App = () => {
                   <th className="px-3.5 py-1.5">ステータス</th>
                   <th className="px-3.5 py-1.5">タイトル</th>
                   <th className="px-3.5 py-1.5">詳細</th>
-                  <th className="px-3.5 py-1.5">期限</th>
+                  <th className="px-3.5 py-1.5">
+                    <button
+                      type="button"
+                      onClick={onClickSortDeadline}
+                      className="text-indigo-600"
+                    >
+                      期限{" "}
+                      {isSortingDeadline === "none"
+                        ? ""
+                        : isSortingDeadline
+                        ? "▲"
+                        : "▼"}
+                    </button>
+                  </th>
                   <th className="px-3.5 py-1.5">作成</th>
                   <th className="px-3.5 py-1.5">更新</th>
                   <th className="px-3.5 py-1.5"></th>

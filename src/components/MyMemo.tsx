@@ -64,7 +64,8 @@ export const MyMemo = () => {
             <p>
               　・期限の追加などの要素追加（期限、内容、作成日、更新日など）
             </p>
-            <p>　・ソート(ID、期限)</p>
+            <p>　・ソート(ID)</p>
+            <p className="line-through">　・ソート(期限)</p>
             <p className="line-through">　・ステータス変更でスタイル変更</p>
             <p>　・コンポーネント化してみる</p>
             <p className="line-through">
@@ -81,7 +82,8 @@ export const MyMemo = () => {
               </li>
               <li className="line-through">todoの編集のキャンセル</li>
               <li>todoリストのその場で修正</li>
-              <li>並び替え</li>
+              <li className="line-through">並び替え（単体）</li>
+              <li>並び替え（複数）</li>
               <li className="line-through">絞り込み検索（完全一致、含む）</li>
               <li>絞り込み検索（あいまい）</li>
               <li>csvエクスポート ダウンロード、インポート</li>
