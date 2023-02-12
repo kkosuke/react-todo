@@ -1,13 +1,4 @@
 import { useState } from "react";
-// @ts-ignore
-import styled from "styled-components";
-
-const SSection = styled.section`
-  margin-top: 10px;
-  background: #f6f6f6;
-  padding: 16px;
-  border-radius: 8px;
-`;
 export const MyMemo = () => {
   const [isShow, setIsShow] = useState(false);
   const toggleShow = () => {
@@ -23,7 +14,7 @@ export const MyMemo = () => {
       </button>
       {isShow && (
         <>
-          <SSection>
+          <section className="mt-4 p-4 rounded-lg bg-gray-100">
             <h2 className="font-bold text-lg">icon, tailwind</h2>
             <ul className="mt-4">
               <li>
@@ -83,18 +74,18 @@ export const MyMemo = () => {
             </p>
             <p>　・Recoilを使って状態管理</p>
             <p>　・Firebaseまたは、Supabaseを導入してデータの永続化</p>
-          </SSection>
-          <SSection>
+          </section>
+          <section className="mt-4 p-4 rounded-lg bg-gray-100">
             <h2>やれたらいいな</h2>
             <ul>
-              <li>todoの項目を用意に増やせるようになる</li>
+              <li>todoの項目を簡単に増やせるようになる</li>
               <li>todoの編集のキャンセル</li>
               <li>todoリストのその場で修正</li>
               <li>並び替え</li>
               <li>絞り込み検索（完全一致、含む、あいまい）</li>
               <li>csvエクスポート ダウンロード、インポート</li>
             </ul>
-          </SSection>
+          </section>
         </>
       )}
     </div>

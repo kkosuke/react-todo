@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// @ts-ignore
 import { v4 as uuidv4 } from "uuid";
 import "./index.css";
 
@@ -12,23 +11,29 @@ import { TodoDeadlineInput } from "./components/TodoDeadlineInput";
 import { FilterByDate } from "./components/FilterByDate";
 
 const App = () => {
-  const inputClassName =
-    "block bg-white w-full border ml-2 border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
-
-  const oneWeekLetter = new Date();
-  oneWeekLetter.setDate(oneWeekLetter.getDate() + 7);
-  oneWeekLetter.setMinutes(0);
+  type deadlineType = "year" | "month" | "date" | "hours" | "minutes";
+  type todoStatusType = "" | "notStarted" | "doing" | "done";
   type todoType = {
-    id?: string;
-    status?: string;
+    id: string;
+    status: todoStatusType;
     title: string;
     detail: string;
     deadline: Date;
   };
+
+  const inputClassName =
+    "block bg-white w-full border ml-2 border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+  const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
+  let defaultDeadlineEnd = new Date();
+  defaultDeadlineEnd.setDate(defaultDeadlineEnd.getDate() + 7);
+  defaultDeadlineEnd.setMinutes(0);
+  defaultDeadlineEnd = new Date(defaultDeadlineEnd);
   const initTodo: todoType = {
+    id: "",
+    status: "",
     title: "",
     detail: "",
-    deadline: new Date(oneWeekLetter),
+    deadline: defaultDeadlineEnd,
   };
 
   const [todoList, setTodoList] = useState(() =>
@@ -38,18 +43,8 @@ const App = () => {
   );
   const [newTodo, setNewTodo] = useState(initTodo);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentTodo, setCurrentTodo] = useState<{
-    id?: string;
-    status?: string;
-    title?: string;
-    detail?: string;
-    deadline?: Date;
-  }>({});
+  const [currentTodo, setCurrentTodo] = useState(initTodo);
   const [currentList, setCurrentList] = useState(todoList);
-  const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
-  // ステータスでフィルター
-  const todoStatusKeys = ["", "notStarted", "doing", "done"] as const;
-  type todoStatusType = typeof todoStatusKeys[number];
   const [filterStatusValue, setFilterStatusValue] =
     useState<todoStatusType>("");
   // ID名でフィルター
@@ -57,7 +52,7 @@ const App = () => {
   // 日にちでフィルター
   const [filterDateValues, setFilterDateValues] = useState([
     new Date(),
-    new Date(oneWeekLetter),
+    defaultDeadlineEnd,
   ]);
   const [isFiltering, setIsFiltering] = useState(false);
 
@@ -74,31 +69,16 @@ const App = () => {
       ...newTodo,
       detail: event.target.value,
     });
-  const onTodoDeadlineInputChange = (event: any, type: string) => {
-    let newDeadline: Date = new Date(newTodo.deadline);
-    switch (type) {
-      case "year":
-        newDeadline = new Date(newDeadline.setFullYear(event.target.value));
-        break;
-      case "month":
-        newDeadline = new Date(newDeadline.setMonth(event.target.value - 1));
-        break;
-      case "date":
-        newDeadline = new Date(newDeadline.setDate(event.target.value));
-        break;
-      case "hours":
-        newDeadline = new Date(newDeadline.setHours(event.target.value));
-        break;
-      case "minutes":
-        newDeadline = new Date(newDeadline.setMinutes(event.target.value));
-        break;
-    }
+  const onTodoDeadlineInputChange = (event: any, deadlineType: deadlineType) =>
     setNewTodo({
       ...newTodo,
-      deadline: newDeadline,
+      deadline: generateDeadline(
+        new Date(newTodo.deadline),
+        deadlineType,
+        event.target.value
+      ),
     });
-  };
-  const onTodoSubmit = (event: any) => {
+  const onTodoSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (newTodo.title.trim()) {
       const _newTodo = {
@@ -116,65 +96,29 @@ const App = () => {
   //-----------------------------
   // TODOの編集時
   //-----------------------------
-  const onClickEdit = (todo: any) => {
+  const onClickEdit = (todo: todoType) => {
     setIsEditing(true);
-    let thisTodo = todo;
-    if (!todo.deadline) {
-      let defaultDeadline = new Date();
-      defaultDeadline.setDate(defaultDeadline.getDate() + 7);
-      defaultDeadline.setMinutes(0);
-      defaultDeadline = new Date(defaultDeadline);
-      thisTodo = { ...todo, deadline: defaultDeadline };
-    }
-    setCurrentTodo(thisTodo);
+    setCurrentTodo({ ...initTodo, ...todo }); // 初期のデータからの場合、期限などがない場合がある
   };
-  const onEditTodoStatus = (event: any) => {
-    const thisTodo = { ...currentTodo, status: event.target.value };
-    setCurrentTodo(thisTodo);
-  };
-  const onEditTodoTitle = (event: any) => {
-    const thisTodo = { ...currentTodo, title: event.target.value };
-    setCurrentTodo(thisTodo);
-  };
-  const onEditTodoTextarea = (event: any) => {
-    const thisTodo = { ...currentTodo, detail: event.target.value };
-    setCurrentTodo(thisTodo);
-  };
-  const onEditTodoDeadline = (event: any, type: string) => {
-    let newDeadline = currentTodo.deadline;
-    if (newDeadline) {
-      newDeadline = new Date(newDeadline);
-      switch (type) {
-        case "year":
-          newDeadline = new Date(newDeadline.setFullYear(event.target.value));
-          break;
-        case "month":
-          newDeadline = new Date(newDeadline.setMonth(event.target.value - 1));
-          break;
-        case "date":
-          newDeadline = new Date(newDeadline.setDate(event.target.value));
-          break;
-        case "hours":
-          newDeadline = new Date(newDeadline.setHours(event.target.value));
-          break;
-        case "minutes":
-          newDeadline = new Date(newDeadline.setMinutes(event.target.value));
-          break;
-      }
-    } else {
-      newDeadline = new Date();
-      newDeadline.setDate(newDeadline.getDate() + 7);
-      newDeadline.setMinutes(0);
-      newDeadline = new Date(newDeadline);
-    }
-    const thisTodo = { ...currentTodo, deadline: newDeadline };
-    setCurrentTodo(thisTodo);
-  };
-
+  const onEditTodoStatus = (event: any) =>
+    setCurrentTodo({ ...currentTodo, status: event.target.value });
+  const onEditTodoTitle = (event: any) =>
+    setCurrentTodo({ ...currentTodo, title: event.target.value });
+  const onEditTodoTextarea = (event: any) =>
+    setCurrentTodo({ ...currentTodo, detail: event.target.value });
+  const onEditTodoDeadline = (event: any, deadlineType: deadlineType) =>
+    setCurrentTodo({
+      ...currentTodo,
+      deadline: generateDeadline(
+        new Date(currentTodo.deadline),
+        deadlineType,
+        event.target.value
+      ),
+    });
   // 編集完了ボタンを押下したら、操作中のidを既存のtodoと差し替える
-  const onEditSubmit = (event: any) => {
+  const onEditSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    const updatedItem = todoList.map((todo: any) =>
+    const updatedItem = todoList.map((todo: todoType) =>
       todo.id === currentTodo.id ? currentTodo : todo
     );
     setIsEditing(false);
@@ -189,7 +133,9 @@ const App = () => {
     const newFilterStatusValue = status.length ? status : "";
     const newCurrentList = !newFilterStatusValue
       ? todoList
-      : todoList.filter((todo: any) => todo.status === newFilterStatusValue);
+      : todoList.filter(
+          (todo: todoType) => todo.status === newFilterStatusValue
+        );
     setFilterStatusValue(newFilterStatusValue);
     setCurrentList(newCurrentList);
     setIsFiltering(newFilterStatusValue !== "");
@@ -203,7 +149,7 @@ const App = () => {
     const newCurrentList = !newFilterIdValue
       ? todoList
       : todoList.filter(
-          (todo: any) =>
+          (todo: todoType) =>
             todo.id.toLowerCase().indexOf(newFilterIdValue.toLowerCase()) !== -1
         );
     setFilterIdValue(newFilterIdValue);
@@ -229,16 +175,45 @@ const App = () => {
   //-----------------------------
   // 削除
   //-----------------------------
-  const onClickDelete = (id: number) => {
-    // 押下したTODO以外を残す
-    const removeItem = todoList.filter((todo: any) => todo.id !== id);
-    setTodoList(removeItem);
+  const onClickDelete = (id: string) => {
+    if (window.confirm("Do you really want to delete?")) {
+      const removeItem = todoList.filter((todo: todoType) => todo.id !== id); // 押下したTODO以外を残す
+      setTodoList(removeItem);
+    }
+  };
+
+  //-----------------------------
+  // 変換
+  //-----------------------------
+  const generateDeadline = (
+    deadlineDate: Date,
+    updateType: deadlineType,
+    updateValue: number
+  ) => {
+    switch (updateType) {
+      case "year":
+        deadlineDate.setFullYear(updateValue);
+        break;
+      case "month":
+        deadlineDate.setMonth(updateValue - 1);
+        break;
+      case "date":
+        deadlineDate.setDate(updateValue);
+        break;
+      case "hours":
+        deadlineDate.setHours(updateValue);
+        break;
+      case "minutes":
+        deadlineDate.setMinutes(updateValue);
+        break;
+    }
+    return new Date(deadlineDate);
   };
 
   useEffect(() => {
     localStorage.setItem("todoList", JSON.stringify(todoList));
     onFilterButtonClick(filterStatusValue);
-    const newCurrentList = todoList.filter((todo: any) => {
+    const newCurrentList = todoList.filter((todo: todoType) => {
       if (todo.deadline) {
         return (
           new Date(todo.deadline) >= filterDateValues[0] &&
@@ -269,7 +244,7 @@ const App = () => {
                 <tr>
                   <th>ステータス</th>
                   <td>
-                    {Object.keys(TodoStatus).map((key) => (
+                    {Object.keys(TodoStatus).map((key: string) => (
                       <label key={key}>
                         <input
                           type="radio"
@@ -278,10 +253,7 @@ const App = () => {
                           onChange={onEditTodoStatus}
                           checked={key === currentTodo.status}
                         />
-                        {
-                          // @ts-ignore
-                          TodoStatus[key]
-                        }
+                        {TodoStatus[key]}
                       </label>
                     ))}
                   </td>
@@ -451,7 +423,7 @@ const App = () => {
               <tbody>
                 {currentList.length ? (
                   <>
-                    {currentList.map((todo: any) => (
+                    {currentList.map((todo: todoType) => (
                       <Todo
                         key={todo.id}
                         todo={todo}
@@ -465,8 +437,7 @@ const App = () => {
                   <tr>
                     <td colSpan={5} className="px-4 py-5 sm:px-6 text-center">
                       {isFiltering
-                        ? // @ts-ignore
-                          `${TodoStatus[filterStatusValue]}のTODOはありません。`
+                        ? `${TodoStatus[filterStatusValue]}のTODOはありません。`
                         : "TODOを入力してください。"}
                     </td>
                   </tr>
