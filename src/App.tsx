@@ -11,6 +11,7 @@ import { FilterByStatus } from "./components/FilterByStatus";
 import { FilterByID } from "./components/FilterByID";
 import { TodoDeadlineInput } from "./components/TodoDeadlineInput";
 import { FilterByDate } from "./components/FilterByDate";
+import { SortButton } from "./components/SortButton";
 
 const App = () => {
   type deadlineType = "year" | "month" | "date" | "hours" | "minutes";
@@ -23,6 +24,9 @@ const App = () => {
     createdAt: Date;
     updateAt: Date;
     deadline: Date;
+  };
+  type sortValueType = {
+    [key: string]: "none" | "desc" | "asc";
   };
 
   const inputClassName =
@@ -40,6 +44,11 @@ const App = () => {
     createdAt: new Date(),
     updateAt: new Date(),
     deadline: new Date(defaultDeadlineEnd),
+  };
+  const initSortValue: sortValueType = {
+    createdAt: "asc",
+    id: "none",
+    deadline: "none",
   };
 
   const [todoList, setTodoList] = useState(() =>
@@ -62,9 +71,7 @@ const App = () => {
     filterDateSetting(new Date(defaultDeadlineEnd), 1),
   ]);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [isSortingDeadline, setIsSortingDeadline] = useState<
-    "none" | true | false
-  >("none");
+  const [sortValue, setSortValue] = useState(initSortValue);
 
   //-----------------------------
   // 新規のTODO作成時
@@ -160,13 +167,7 @@ const App = () => {
   // ステータスで絞り込むボタン押下時
   const onFilterButtonClick = (status: todoStatusType) => {
     const newFilterStatusValue = status.length ? status : "";
-    const newCurrentList = !newFilterStatusValue
-      ? todoList
-      : todoList.filter(
-          (todo: todoType) => todo.status === newFilterStatusValue
-        );
     setFilterStatusValue(newFilterStatusValue);
-    setCurrentList(newCurrentList);
     setIsFiltering(newFilterStatusValue !== "");
   };
   // ID絞り込みinput操作時
@@ -175,14 +176,7 @@ const App = () => {
     const newFilterIdValue = event.target.value.length
       ? event.target.value.trim().match(/[^\s]+/g)[0]
       : "";
-    const newCurrentList = !newFilterIdValue
-      ? todoList
-      : todoList.filter(
-          (todo: todoType) =>
-            todo.id.toLowerCase().indexOf(newFilterIdValue.toLowerCase()) !== -1
-        );
     setFilterIdValue(newFilterIdValue);
-    setCurrentList(newCurrentList);
     setIsFiltering(newFilterIdValue !== "");
   };
   // 日にちで絞り込み押下時
@@ -190,15 +184,32 @@ const App = () => {
     const thisValue = event.target.value;
     const newFilterDateValues = filterDateValues;
     const y = thisValue.split("-")[0];
-    const m = Number(thisValue.split("-")[1]) - 1;
+    const m = Number(thisValue.split("-")[1]) - 1; // htmlには正しい月数。しかしjsは-1しなくてはいけない
     const d = thisValue.split("-")[2];
     newFilterDateValues[idx].setFullYear(y);
     newFilterDateValues[idx].setMonth(m);
     newFilterDateValues[idx].setDate(d);
-    setFilterDateValues([
-      filterDateSetting(new Date(newFilterDateValues[0]), 0),
-      filterDateSetting(new Date(filterDateValues[1]), 1),
-    ]);
+    if (idx === 0) {
+      setFilterDateValues([
+        filterDateSetting(new Date(newFilterDateValues[0]), 0),
+        filterDateSetting(new Date(filterDateValues[1]), 1),
+      ]);
+    } else {
+      setFilterDateValues([
+        filterDateSetting(new Date(filterDateValues[0]), 0),
+        filterDateSetting(new Date(newFilterDateValues[1]), 1),
+      ]);
+    }
+  };
+
+  // ソートボタン押下
+  const onClickSort = (type: string) => {
+    let newSortValue = initSortValue;
+    if (type !== "createdAt") {
+      newSortValue.createdAt = "none";
+    }
+    newSortValue[type] = sortValue[type] === "desc" ? "asc" : "desc";
+    setSortValue(newSortValue);
   };
 
   //-----------------------------
@@ -214,7 +225,7 @@ const App = () => {
         deadlineDate.setFullYear(updateValue);
         break;
       case "month":
-        deadlineDate.setMonth(updateValue - 1);
+        deadlineDate.setMonth(updateValue); // jsで受け取り、jsで返すので+-などはしない
         break;
       case "date":
         deadlineDate.setDate(updateValue);
@@ -230,9 +241,26 @@ const App = () => {
   };
 
   useEffect(() => {
+    let newCurrentList = todoList;
     localStorage.setItem("todoList", JSON.stringify(todoList));
-    onFilterButtonClick(filterStatusValue);
-    let newCurrentList = todoList.filter((todo: todoType) => {
+
+    // ステータスで絞り込み
+    newCurrentList = !filterStatusValue
+      ? newCurrentList
+      : newCurrentList.filter(
+          (todo: todoType) => todo.status === filterStatusValue
+        );
+
+    // IDで絞り込み
+    newCurrentList = !filterIdValue
+      ? newCurrentList
+      : newCurrentList.filter(
+          (todo: todoType) =>
+            todo.id.toLowerCase().indexOf(filterIdValue.toLowerCase()) !== -1
+        );
+
+    // 日にちで絞り込み
+    newCurrentList = newCurrentList.filter((todo: todoType) => {
       if (todo.deadline) {
         return (
           new Date(todo.deadline) >= new Date(filterDateValues[0]) &&
@@ -242,34 +270,21 @@ const App = () => {
         return true;
       }
     });
-    // 期限で絞り込み本体
-    if (isSortingDeadline !== "none") {
-      newCurrentList.sort(function (a: todoType, b: todoType) {
-        if (isSortingDeadline) {
-          return a.deadline > b.deadline ? 1 : -1;
-        } else {
-          return a.deadline > b.deadline ? -1 : 1;
-        }
-      });
-    }
-    setCurrentList(newCurrentList);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todoList, filterDateValues, isSortingDeadline]);
 
-  // 期限で絞り込み切り替え
-  const onClickSortDeadline = () => {
-    switch (isSortingDeadline) {
-      case true:
-        setIsSortingDeadline(false);
-        break;
-      case false:
-        setIsSortingDeadline("none");
-        break;
-      case "none":
-        setIsSortingDeadline(true);
-        break;
-    }
-  };
+    const sortKey: string = Object.keys(sortValue).filter((key) => {
+      return sortValue[key] !== "none";
+    })[0];
+    newCurrentList.sort(function (a: todoType, b: todoType) {
+      if (sortValue[sortKey] === "asc") {
+        //@ts-ignore
+        return a[sortKey] > b[sortKey] ? 1 : -1;
+      } else {
+        //@ts-ignore
+        return a[sortKey] > b[sortKey] ? -1 : 1;
+      }
+    });
+    setCurrentList(newCurrentList);
+  }, [todoList, filterStatusValue, filterIdValue, filterDateValues, sortValue]);
 
   return (
     <div
@@ -464,25 +479,33 @@ const App = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-3.5 py-1.5">ID</th>
+                  <th className="px-3.5 py-1.5">
+                    <SortButton
+                      labelName="ID"
+                      typeName="id"
+                      sortValue={sortValue}
+                      onClickButton={onClickSort}
+                    />
+                  </th>
                   <th className="px-3.5 py-1.5">ステータス</th>
                   <th className="px-3.5 py-1.5">タイトル</th>
                   <th className="px-3.5 py-1.5">内容</th>
                   <th className="px-3.5 py-1.5">
-                    <button
-                      type="button"
-                      onClick={onClickSortDeadline}
-                      className="text-indigo-600"
-                    >
-                      期限{" "}
-                      {isSortingDeadline === "none"
-                        ? ""
-                        : isSortingDeadline
-                        ? "▲"
-                        : "▼"}
-                    </button>
+                    <SortButton
+                      labelName="期限"
+                      typeName="deadline"
+                      sortValue={sortValue}
+                      onClickButton={onClickSort}
+                    />
                   </th>
-                  <th className="px-3.5 py-1.5">作成</th>
+                  <th className="px-3.5 py-1.5">
+                    <SortButton
+                      labelName="作成"
+                      typeName="createdAt"
+                      sortValue={sortValue}
+                      onClickButton={onClickSort}
+                    />
+                  </th>
                   <th className="px-3.5 py-1.5">更新</th>
                   <th className="px-3.5 py-1.5"></th>
                 </tr>

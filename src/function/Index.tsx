@@ -15,7 +15,7 @@ export const displayDate = (dateFormat: Date) => {
 
 export const filterDateSetting = (dateFormat: Date, startOrEnd: number) => {
   dateFormat = new Date(dateFormat);
-  dateFormat.setHours(startOrEnd < 1 ? 0 : 59);
+  dateFormat.setHours(startOrEnd < 1 ? 0 : 23);
   dateFormat.setMinutes(startOrEnd < 1 ? 0 : 59);
   dateFormat.setSeconds(startOrEnd < 1 ? 0 : 59);
   dateFormat.setMilliseconds(startOrEnd < 1 ? 0 : 59);

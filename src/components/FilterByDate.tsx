@@ -3,7 +3,7 @@ export const FilterByDate = (props: any) => {
     "bg-white w-18 border ml-2 mr-2 border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
 
   const dateFormat = (date: Date) => {
-    let m = String(date.getMonth() + 1);
+    let m = String(date.getMonth() + 1); // 表示するには jsの月は+1する
     m = m.length < 2 ? "0" + m : m;
     return date.getFullYear() + "-" + m + "-" + date.getDate();
   };
