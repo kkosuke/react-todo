@@ -5,7 +5,9 @@ export const FilterByDate = (props: any) => {
   const dateFormat = (date: Date) => {
     let m = String(date.getMonth() + 1); // 表示するには jsの月は+1する
     m = m.length < 2 ? "0" + m : m;
-    return date.getFullYear() + "-" + m + "-" + date.getDate();
+    let d = String(date.getDate());
+    d = d.length < 2 ? "0" + d : d;
+    return date.getFullYear() + "-" + m + "-" + d;
   };
 
   return (
