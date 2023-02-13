@@ -77,6 +77,7 @@ export const MyMemo = () => {
           <section className="mt-4 p-4 rounded-lg bg-gray-100">
             <h2>やれたらいいな</h2>
             <ul>
+              <li>絞り込みの掛け合わせでなく、いい感じにできないか</li>
               <li className="line-through">
                 todoの項目を簡単に増やせるようになる
               </li>
