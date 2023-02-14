@@ -64,19 +64,17 @@ export const MyMemo = () => {
             <p className="line-through">
               　・期限の追加などの要素追加（期限、内容、作成日、更新日など）
             </p>
-            <p>　・ソート(ID)</p>
+            <p className="line-through">　・ソート(ID)</p>
             <p className="line-through">　・ソート(期限)</p>
             <p className="line-through">　・ステータス変更でスタイル変更</p>
-            <p>　・コンポーネント化してみる</p>
+            <p className="line-through">　・コンポーネント化してみる</p>
             <p className="line-through">
               　・MaterialUIやChakraUI、もしくはTailwind CSSを使ってみる
             </p>
             <p>　・Recoilを使って状態管理</p>
             <p>　・Firebaseまたは、Supabaseを導入してデータの永続化</p>
-          </section>
-          <section className="mt-4 p-4 rounded-lg bg-gray-100">
-            <h2>やれたらいいな</h2>
-            <ul>
+            <h2 className="font-bold text-lg mt-4">やれたらいいな</h2>
+            <ul className="mt-4">
               <li>絞り込みの掛け合わせでなく、いい感じにできないか</li>
               <li className="line-through">
                 todoの項目を簡単に増やせるようになる
