@@ -1,4 +1,13 @@
-export const SortButton = (props: any) => {
+import { sortValueType } from "../types/Index";
+
+export const SortButton = (props: {
+  labelName: string;
+  typeName: string;
+  sortValue: {
+    [key: string]: sortValueType;
+  };
+  onClickButton: (typeName: string) => void;
+}) => {
   return (
     <>
       <button

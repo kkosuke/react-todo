@@ -4,6 +4,12 @@ import "./index.css";
 
 import { TodoStatus } from "./constants/TodoStatus";
 import { filterDateSetting } from "./function/Index";
+import {
+  todoType,
+  sortValueType,
+  deadlineType,
+  todoStatusType,
+} from "./types/Index";
 
 import { MyMemo } from "./components/MyMemo";
 import { Todo } from "./components/Todo";
@@ -14,28 +20,12 @@ import { FilterByDate } from "./components/FilterByDate";
 import { SortButton } from "./components/SortButton";
 
 const App = () => {
-  type deadlineType = "year" | "month" | "date" | "hours" | "minutes";
-  type todoStatusType = "" | "notStarted" | "doing" | "done";
-  type todoType = {
-    id: string;
-    status: todoStatusType;
-    title: string;
-    detail: string;
-    createdAt: Date;
-    updateAt: Date;
-    deadline: Date;
-  };
-  type sortValueType = {
-    [key: string]: "none" | "desc" | "asc";
-  };
-
   const inputClassName =
     "block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
-  const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
+
   let defaultDeadlineEnd = new Date();
   defaultDeadlineEnd.setDate(defaultDeadlineEnd.getDate() + 7);
   defaultDeadlineEnd.setMinutes(0); // 初期期限の分は0にしたい
-
   const initTodo: todoType = {
     id: "",
     status: "notStarted",
@@ -45,7 +35,10 @@ const App = () => {
     updateAt: new Date(),
     deadline: new Date(defaultDeadlineEnd),
   };
-  const initSortValue: sortValueType = {
+  const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
+  const initSortValue: {
+    [key: string]: sortValueType;
+  } = {
     createdAt: "asc",
     id: "none",
     deadline: "none",
@@ -76,25 +69,30 @@ const App = () => {
   //-----------------------------
   // 新規のTODO作成時
   //-----------------------------
-  const onTodoStatusChange = (event: any) =>
-    setNewTodo({ ...newTodo, status: event.target.value });
-  const onTodoInputChange = (event: any) =>
+  const onTodoStatusChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setNewTodo({ ...newTodo, status: event.target.value as todoStatusType });
+  const onTodoInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setNewTodo({
       ...newTodo,
       title: event.target.value,
     });
-  const onTodoDetailTextareaChange = (event: any) =>
+  const onTodoDetailTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) =>
     setNewTodo({
       ...newTodo,
       detail: event.target.value,
     });
-  const onTodoDeadlineInputChange = (event: any, deadlineType: deadlineType) =>
+  const onTodoDeadlineInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    deadlineType: deadlineType
+  ) =>
     setNewTodo({
       ...newTodo,
       deadline: generateDeadline(
         new Date(newTodo.deadline),
         deadlineType,
-        event.target.value
+        Number(event.target.value)
       ),
     });
   const onTodoSubmit = (event: React.FormEvent) => {
@@ -133,19 +131,25 @@ const App = () => {
   // 編集のキャンセル
   const onClickEditCancel = () => setIsEditing(false);
 
-  const onEditTodoStatus = (event: any) =>
-    setCurrentTodo({ ...currentTodo, status: event.target.value });
-  const onEditTodoTitle = (event: any) =>
+  const onEditTodoStatus = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setCurrentTodo({
+      ...currentTodo,
+      status: event.target.value as todoStatusType,
+    });
+  const onEditTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
     setCurrentTodo({ ...currentTodo, title: event.target.value });
-  const onEditTodoTextarea = (event: any) =>
+  const onEditTodoTextarea = (event: React.ChangeEvent<HTMLTextAreaElement>) =>
     setCurrentTodo({ ...currentTodo, detail: event.target.value });
-  const onEditTodoDeadline = (event: any, deadlineType: deadlineType) =>
+  const onEditTodoDeadline = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    deadlineType: deadlineType
+  ) =>
     setCurrentTodo({
       ...currentTodo,
       deadline: generateDeadline(
         new Date(currentTodo.deadline),
         deadlineType,
-        event.target.value
+        Number(event.target.value)
       ),
     });
   // 編集完了ボタンを押下したら、操作中のidを既存のtodoと差し替える
@@ -173,21 +177,23 @@ const App = () => {
     setIsFiltering(newFilterStatusValue !== "");
   };
   // ID絞り込みinput操作時
-  const onFilterInputChange = (event: any) => {
+  const onFilterInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // 参考：https://qiita.com/takf-jp/items/af10bc05428b1182ece5
-    const newFilterIdValue = event.target.value.length
-      ? event.target.value.trim().match(/[^\s]+/g)[0]
-      : "";
+    const text = event.target.value.trim().match(/[^\s]+/g);
+    const newFilterIdValue = text ? text[0] : "";
     setFilterIdValue(newFilterIdValue);
     setIsFiltering(newFilterIdValue !== "");
   };
   // 日にちで絞り込み押下時
-  const onFilterDateChange = (event: any, idx: number) => {
+  const onFilterDateChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    idx: number
+  ) => {
     const thisValue = event.target.value;
     const newFilterDateValues = filterDateValues;
-    const y = thisValue.split("-")[0];
+    const y = Number(thisValue.split("-")[0]);
     const m = Number(thisValue.split("-")[1]) - 1; // htmlには正しい月数。しかしjsは-1しなくてはいけない
-    const d = thisValue.split("-")[2];
+    const d = Number(thisValue.split("-")[2]);
     newFilterDateValues[idx].setFullYear(y);
     newFilterDateValues[idx].setMonth(m);
     newFilterDateValues[idx].setDate(d);
@@ -344,7 +350,7 @@ const App = () => {
                 <tr>
                   <th className="bg-gray-100">期限</th>
                   <td className="p-2">
-                    {deadlineKeys.map((keyValue: string) => (
+                    {deadlineKeys.map((keyValue: deadlineType) => (
                       <TodoDeadlineInput
                         key={keyValue}
                         inputValueType={keyValue}
@@ -437,7 +443,7 @@ const App = () => {
                   </th>
                   <td className="py-2">
                     <div>
-                      {deadlineKeys.map((keyValue: string) => (
+                      {deadlineKeys.map((keyValue: deadlineType) => (
                         <TodoDeadlineInput
                           key={keyValue}
                           inputValueType={keyValue}
@@ -481,13 +487,11 @@ const App = () => {
       <FilterByID
         onInputChange={onFilterInputChange}
         filterIdValue={filterIdValue}
-        isFiltering={isFiltering}
       />
 
       <FilterByDate
-        isFiltering={isFiltering}
-        filterDateValue={filterDateValues}
         onInputChange={onFilterDateChange}
+        filterDateValue={filterDateValues}
       />
 
       <section className="mt-5">

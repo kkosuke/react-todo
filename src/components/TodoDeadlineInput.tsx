@@ -1,4 +1,13 @@
-export const TodoDeadlineInput = (props: any) => {
+import { todoType, deadlineType } from "../types/Index";
+
+export const TodoDeadlineInput = (props: {
+  todo: todoType;
+  inputValueType: deadlineType;
+  onInputChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    deadline: deadlineType
+  ) => void;
+}) => {
   let oneWeekLetter = new Date();
   oneWeekLetter.setDate(oneWeekLetter.getDate() + 7);
   oneWeekLetter.setMinutes(0);

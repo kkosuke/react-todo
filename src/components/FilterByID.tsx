@@ -1,4 +1,7 @@
-export const FilterByID = (props: any) => {
+export const FilterByID = (props: {
+  filterIdValue: string;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
   const inputClassName =
     "block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
   return (

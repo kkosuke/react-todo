@@ -1,4 +1,7 @@
-export const FilterByDate = (props: any) => {
+export const FilterByDate = (props: {
+  filterDateValue: Date[];
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>, idx: number) => void;
+}) => {
   const dateInputClassName =
     "bg-white w-18 border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
 

@@ -1,3 +1,5 @@
+import { todoStatusType } from "../types/Index";
+
 const baseButtonClass =
   "px-4 py-2 text-sm font-medium bg-white border border-gray-200 focus:z-10";
 const defaultStyle = " text-gray-900";
@@ -6,7 +8,11 @@ const buttonGroupButtonClassNameL = baseButtonClass + " rounded-l-lg ";
 const buttonGroupButtonClassNameM = baseButtonClass + " border-t border-b ";
 const buttonGroupButtonClassNameR = baseButtonClass + " rounded-r-md";
 
-export const FilterByStatus = (props: any) => {
+export const FilterByStatus = (props: {
+  onClickButton: (sts: todoStatusType) => void;
+  filterStatusValue: todoStatusType;
+  isFiltering: boolean;
+}) => {
   return (
     <>
       <dl>

@@ -1,7 +1,13 @@
 import { TodoStatus } from "../constants/TodoStatus";
 import { displayDate } from "../function/Index";
+import { todoType, todoStatusType } from "../types/Index";
 
-export const Todo = (props: any) => {
+export const Todo = (props: {
+  todo: todoType;
+  onClickEdit: (todo: todoType) => void;
+  onClickDelete: (id: string) => void;
+  filterStatusValue: todoStatusType;
+}) => {
   return (
     <tr
       className={
