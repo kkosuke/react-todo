@@ -38,55 +38,58 @@ export const MyMemo = () => {
             </ul>
             <h2 className="font-bold text-lg mt-4">説明/学習法</h2>
             <p className="mt-4">TODOリストをつくってみる。ReactHooksを使う。</p>
-            <p className="line-through">・ReactHooksを使う</p>
-            <p className="line-through">・TypeScriptで書く</p>
+            <p className="line-through">
+              ReactHooksを使う（useStateやuseEffect）
+            </p>
+            <p className="line-through">TypeScriptで書く</p>
             <p className="line-through">
               → anyを使用しても良いので型エラーを解消する
             </p>
             <p>▼TODOリスト内の各TODOにほしい要素</p>
-            <p className="line-through">　・ID(連番もしくはuuidを設定)</p>
-            <p className="line-through">　・タイトル</p>
+            <p className="line-through">ID(連番もしくはuuidを設定)</p>
+            <p className="line-through">タイトル</p>
             <p className="line-through">
-              　・ステータス(未着手、進行中、完了 など)
+              ステータス(未着手、進行中、完了 など)
             </p>
-            <p className="line-through">　・詳細</p>
+            <p className="line-through">詳細</p>
             <p>▼ほしい機能</p>
-            <p className="line-through">　・TODOの追加</p>
-            <p className="line-through">　・TODOの削除</p>
-            <p className="line-through">　・TODOの編集機能</p>
-            <p className="line-through">　・絞り込み機能(IDで絞り込み)</p>
-            <p className="line-through">　・絞り込み機能(期限で絞り込み)</p>
-            <p className="line-through">
-              　・絞り込み機能(ステータスで絞り込み)
-            </p>
+            <p className="line-through">TODOの追加</p>
+            <p className="line-through">TODOの削除</p>
+            <p className="line-through">TODOの編集機能</p>
+            <p className="line-through">絞り込み機能(IDで絞り込み)</p>
+            <p className="line-through">絞り込み機能(期限で絞り込み)</p>
+            <p className="line-through">絞り込み機能(ステータスで絞り込み)</p>
             <p>▼余裕があれば以下のようなカスタマイズをする</p>
-            <p>　・anyを使わずに型付けを行なう</p>
+            <p className="line-through">anyを使わずに型付けを行なう</p>
             <p className="line-through">
-              　・期限の追加などの要素追加（期限、内容、作成日、更新日など）
+              期限の追加などの要素追加（期限、内容、作成日、更新日など）
             </p>
-            <p className="line-through">　・ソート(ID)</p>
-            <p className="line-through">　・ソート(期限)</p>
-            <p className="line-through">　・ステータス変更でスタイル変更</p>
-            <p className="line-through">　・コンポーネント化してみる</p>
+            <p className="line-through">ソート(ID)</p>
+            <p className="line-through">ソート(期限)</p>
+            <p className="line-through">ステータス変更でスタイル変更</p>
+            <p className="line-through">コンポーネント化してみる</p>
             <p className="line-through">
-              　・MaterialUIやChakraUI、もしくはTailwind CSSを使ってみる
+              MaterialUIやChakraUI、もしくはTailwind CSSを使ってみる
             </p>
-            <p>　・Recoilを使って状態管理</p>
-            <p>　・Firebaseまたは、Supabaseを導入してデータの永続化</p>
+            <p>Recoilを使って状態管理</p>
+            <p>Firebaseまたは、Supabaseを導入してデータの永続化</p>
             <h2 className="font-bold text-lg mt-4">やれたらいいな</h2>
             <ul className="mt-4">
-              <li>絞り込みの掛け合わせでなく、いい感じにできないか</li>
               <li className="line-through">
                 todoの項目を簡単に増やせるようになる
               </li>
               <li className="line-through">todoの編集のキャンセル</li>
-              <li>todoリストのその場で修正</li>
               <li className="line-through">並び替え（単体）</li>
-              <li>並び替え（複数）</li>
+              <li className="line-through">並び替え（複数）</li>
               <li className="line-through">絞り込み検索（完全一致、含む）</li>
+              <li>絞り込みの掛け合わせでなく、いい感じにできないか</li>
+              <li>todoリストのその場で修正</li>
               <li>絞り込み検索（あいまい）</li>
               <li>csvエクスポート ダウンロード、インポート</li>
               <li>日にち制御を簡単に</li>
+              <li>tailwindでRWD</li>
+              <li>もっといい感じにコンポネント化</li>
+              <li>独自ReactHooks</li>
             </ul>
           </section>
         </>
