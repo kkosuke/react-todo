@@ -30,7 +30,7 @@ const App = () => {
   };
 
   const inputClassName =
-    "block bg-white w-full border ml-2 border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
+    "block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
   const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
   let defaultDeadlineEnd = new Date();
   defaultDeadlineEnd.setDate(defaultDeadlineEnd.getDate() + 7);
@@ -38,7 +38,7 @@ const App = () => {
 
   const initTodo: todoType = {
     id: "",
-    status: "",
+    status: "notStarted",
     title: "",
     detail: "",
     createdAt: new Date(),
@@ -76,6 +76,8 @@ const App = () => {
   //-----------------------------
   // 新規のTODO作成時
   //-----------------------------
+  const onTodoStatusChange = (event: any) =>
+    setNewTodo({ ...newTodo, status: event.target.value });
   const onTodoInputChange = (event: any) =>
     setNewTodo({
       ...newTodo,
@@ -297,14 +299,17 @@ const App = () => {
       {isEditing ? (
         <>
           <h2 className="text-2xl mb-4">TODOを編集</h2>
-          <form onSubmit={onEditSubmit}>
-            <table>
+          <form
+            onSubmit={onEditSubmit}
+            className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg"
+          >
+            <table className="w-full">
               <tbody>
                 <tr>
-                  <th>ステータス</th>
-                  <td>
+                  <th className="bg-gray-100">ステータス</th>
+                  <td className="p-2">
                     {Object.keys(TodoStatus).map((key: string) => (
-                      <label key={key}>
+                      <label key={key} className="mr-2 cursor-pointer">
                         <input
                           type="radio"
                           name="TodoStatus"
@@ -318,8 +323,8 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>タイトル</th>
-                  <td>
+                  <th className="bg-gray-100">タイトル</th>
+                  <td className="p-2">
                     <input
                       type="text"
                       value={currentTodo.title}
@@ -329,8 +334,8 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>内容</th>
-                  <td>
+                  <th className="bg-gray-100">内容</th>
+                  <td className="p-2">
                     <textarea
                       onChange={onEditTodoTextarea}
                       value={currentTodo.detail}
@@ -339,8 +344,8 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>期限</th>
-                  <td>
+                  <th className="bg-gray-100">期限</th>
+                  <td className="p-2">
                     {deadlineKeys.map((keyValue: string) => (
                       <TodoDeadlineInput
                         key={keyValue}
@@ -352,17 +357,17 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>&nbsp;</th>
-                  <td>
+                  <th className="bg-gray-100">&nbsp;</th>
+                  <td className="p-2">
                     <button
                       type="submit"
-                      className="mt-4 w-60 rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="w-60 rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       TODOを更新
                     </button>
                     <button
                       type="button"
-                      className="mt-4 ml-4 px-3.5 py-1.5 text-base font-semibold leading-7 text-indigo-600 shadow-sm hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="ml-4 px-3.5 py-1.5 text-base font-semibold leading-7 text-indigo-600 hover:bg-gray-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       onClick={onClickEditCancel}
                     >
                       キャンセル
@@ -376,19 +381,32 @@ const App = () => {
       ) : (
         <>
           <h2 className="text-2xl mb-4">新規TODOを追加</h2>
-
-          <form onSubmit={onTodoSubmit}>
-            <table>
+          <form
+            onSubmit={onTodoSubmit}
+            className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg"
+          >
+            <table className="w-full">
               <tbody>
                 <tr>
-                  <th>ステータス</th>
-                  <td>
-                    <p>初期値:未着手</p>
+                  <th className="bg-gray-100">ステータス</th>
+                  <td className="p-2">
+                    {Object.keys(TodoStatus).map((key: string) => (
+                      <label key={key} className="mr-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="TodoStatus"
+                          value={key}
+                          onChange={onTodoStatusChange}
+                          checked={key === newTodo.status}
+                        />
+                        {TodoStatus[key]}
+                      </label>
+                    ))}
                   </td>
                 </tr>
                 <tr>
-                  <th>タイトル</th>
-                  <td>
+                  <th className="bg-gray-100">タイトル</th>
+                  <td className="p-2">
                     <label className="relative block">
                       <input
                         className={inputClassName}
@@ -402,8 +420,8 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>内容</th>
-                  <td>
+                  <th className="bg-gray-100">内容</th>
+                  <td className="p-2">
                     <textarea
                       onChange={onTodoDetailTextareaChange}
                       value={newTodo.detail}
@@ -413,9 +431,13 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>期限</th>
-                  <td>
-                    <p>初期値:1週間後</p>
+                  <th className="bg-gray-100">
+                    <div>期限</div>
+                    <span className="ml-2 text-xs font-normal">
+                      初期値:1週間後
+                    </span>
+                  </th>
+                  <td className="py-2">
                     <div>
                       {deadlineKeys.map((keyValue: string) => (
                         <TodoDeadlineInput
@@ -429,11 +451,11 @@ const App = () => {
                   </td>
                 </tr>
                 <tr>
-                  <th>&nbsp;</th>
-                  <td>
+                  <th className="bg-gray-100">&nbsp;</th>
+                  <td className="p-2">
                     <button
                       type="submit"
-                      className="mt-4 w-60 rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="w-60 rounded-md bg-indigo-600 px-3.5 py-1.5 text-base font-semibold leading-7 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       新規追加
                     </button>
@@ -446,7 +468,12 @@ const App = () => {
       )}
 
       <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
+      <h2 className="text-2xl mb-4">
+        TODO一覧　
+        <span className="text-lg">
+          全{todoList.length}件中 {currentList.length}件表示中
+        </span>
+      </h2>
       <FilterByStatus
         onClickButton={onFilterButtonClick}
         filterStatusValue={filterStatusValue}
@@ -465,76 +492,66 @@ const App = () => {
         onInputChange={onFilterDateChange}
       />
 
-      <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-
       <section className="mt-5">
         <div className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg font-medium leading-6 text-gray-900">
-              TODO一覧　全{todoList.length}件（{currentList.length}件表示中）
-            </h2>
-          </div>
-
-          <div className="border-t border-gray-200">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-3.5 py-1.5">
-                    <SortButton
-                      labelName="ID"
-                      typeName="id"
-                      sortValue={sortValue}
-                      onClickButton={onClickSort}
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-3.5 py-2">
+                  <SortButton
+                    labelName="ID"
+                    typeName="id"
+                    sortValue={sortValue}
+                    onClickButton={onClickSort}
+                  />
+                </th>
+                <th className="px-3.5 py-2">ステータス</th>
+                <th className="px-3.5 py-2">タイトル</th>
+                <th className="px-3.5 py-2">内容</th>
+                <th className="px-3.5 py-2">
+                  <SortButton
+                    labelName="期限"
+                    typeName="deadline"
+                    sortValue={sortValue}
+                    onClickButton={onClickSort}
+                  />
+                </th>
+                <th className="px-3.5 py-2">
+                  <SortButton
+                    labelName="作成"
+                    typeName="createdAt"
+                    sortValue={sortValue}
+                    onClickButton={onClickSort}
+                  />
+                </th>
+                <th className="px-3.5 py-2">更新</th>
+                <th className="px-3.5 py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentList.length ? (
+                <>
+                  {currentList.map((todo: todoType) => (
+                    <Todo
+                      key={todo.id}
+                      todo={todo}
+                      onClickEdit={onClickEdit}
+                      onClickDelete={onClickDelete}
+                      filterStatusValue={filterStatusValue}
                     />
-                  </th>
-                  <th className="px-3.5 py-1.5">ステータス</th>
-                  <th className="px-3.5 py-1.5">タイトル</th>
-                  <th className="px-3.5 py-1.5">内容</th>
-                  <th className="px-3.5 py-1.5">
-                    <SortButton
-                      labelName="期限"
-                      typeName="deadline"
-                      sortValue={sortValue}
-                      onClickButton={onClickSort}
-                    />
-                  </th>
-                  <th className="px-3.5 py-1.5">
-                    <SortButton
-                      labelName="作成"
-                      typeName="createdAt"
-                      sortValue={sortValue}
-                      onClickButton={onClickSort}
-                    />
-                  </th>
-                  <th className="px-3.5 py-1.5">更新</th>
-                  <th className="px-3.5 py-1.5"></th>
+                  ))}
+                </>
+              ) : (
+                <tr>
+                  <td colSpan={8} className="px-4 py-5 sm:px-6 text-center">
+                    {isFiltering
+                      ? `${TodoStatus[filterStatusValue]}のTODOはありません。`
+                      : "TODOを入力してください。"}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentList.length ? (
-                  <>
-                    {currentList.map((todo: todoType) => (
-                      <Todo
-                        key={todo.id}
-                        todo={todo}
-                        onClickEdit={onClickEdit}
-                        onClickDelete={onClickDelete}
-                        filterStatusValue={filterStatusValue}
-                      />
-                    ))}
-                  </>
-                ) : (
-                  <tr>
-                    <td colSpan={8} className="px-4 py-5 sm:px-6 text-center">
-                      {isFiltering
-                        ? `${TodoStatus[filterStatusValue]}のTODOはありません。`
-                        : "TODOを入力してください。"}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              )}
+            </tbody>
+          </table>
         </div>
       </section>
       <MyMemo />
