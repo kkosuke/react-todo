@@ -90,6 +90,7 @@ export const MyMemo = () => {
               <li>tailwindでRWD</li>
               <li>もっといい感じにコンポネント化</li>
               <li>独自ReactHooks</li>
+              <li>期限：全ての期間 がほしい（絞り込みの on off UIが必要？）</li>
             </ul>
           </section>
         </>
