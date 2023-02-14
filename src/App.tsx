@@ -273,15 +273,13 @@ const App = () => {
       }
     });
 
-    const sortKey: string = Object.keys(sortValue).filter((key) => {
-      return sortValue[key] !== "none";
-    })[0];
+    const sortKey = Object.keys(sortValue).find(
+      (key) => sortValue[key] !== "none"
+    ) as keyof todoType;
     newCurrentList.sort(function (a: todoType, b: todoType) {
       if (sortValue[sortKey] === "asc") {
-        //@ts-ignore
         return a[sortKey] > b[sortKey] ? 1 : -1;
       } else {
-        //@ts-ignore
         return a[sortKey] > b[sortKey] ? -1 : 1;
       }
     });
