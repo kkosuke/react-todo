@@ -1,17 +1,10 @@
+import { dateFormat } from "../function/Index";
 export const FilterByDate = (props: {
-  filterDateValue: Date[];
+  filterDateValues: Date[];
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>, idx: number) => void;
 }) => {
   const dateInputClassName =
     "bg-white w-18 border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
-
-  const dateFormat = (date: Date) => {
-    let m = String(date.getMonth() + 1); // 表示するには jsの月は+1する
-    m = m.length < 2 ? "0" + m : m;
-    let d = String(date.getDate());
-    d = d.length < 2 ? "0" + d : d;
-    return date.getFullYear() + "-" + m + "-" + d;
-  };
 
   return (
     <>
@@ -38,16 +31,18 @@ export const FilterByDate = (props: {
             className={dateInputClassName}
             placeholder="開始日"
             type="date"
-            value={dateFormat(props.filterDateValue[0])}
+            value={dateFormat(props.filterDateValues[0])}
             onChange={(e) => props.onInputChange(e, 0)}
+            max={dateFormat(props.filterDateValues[1])}
           />
           <span className="ml-2 mr-2">〜</span>
           <input
             className={dateInputClassName}
             placeholder="終了日"
             type="date"
-            value={dateFormat(props.filterDateValue[1])}
+            value={dateFormat(props.filterDateValues[1])}
             onChange={(e) => props.onInputChange(e, 1)}
+            min={dateFormat(props.filterDateValues[0])}
           />
         </dd>
       </dl>

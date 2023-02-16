@@ -12,4 +12,4 @@ export type deadlineType = "year" | "month" | "date" | "hours" | "minutes";
 
 export type todoStatusType = "" | "notStarted" | "doing" | "done";
 
-export type sortValueType = "none" | "desc" | "asc";
+export type sortOderValueType = "none" | "desc" | "asc";

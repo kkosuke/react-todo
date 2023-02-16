@@ -1,10 +1,10 @@
-import { sortValueType } from "../types/Index";
+import { sortOderValueType } from "../types/Index";
 
 export const SortButton = (props: {
   labelName: string;
   typeName: string;
-  sortValue: {
-    [key: string]: sortValueType;
+  sortOder: {
+    [key: string]: sortOderValueType;
   };
   onClickButton: (typeName: string) => void;
 }) => {
@@ -16,9 +16,9 @@ export const SortButton = (props: {
         className="text-indigo-600"
       >
         {props.labelName}{" "}
-        {props.sortValue[props.typeName] === "none"
+        {props.sortOder[props.typeName] === "none"
           ? ""
-          : props.sortValue[props.typeName] === "asc"
+          : props.sortOder[props.typeName] === "asc"
           ? "▲"
           : "▼"}
       </button>

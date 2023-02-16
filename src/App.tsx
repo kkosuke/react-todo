@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./index.css";
 
-import { TodoStatus } from "./constants/Index";
-import { filterDateSetting } from "./function/Index";
+import { TODO_STATUS } from "./constants/Index";
+import { dateFormat, filterDateSetting } from "./function/Index";
 import {
   todoType,
-  sortValueType,
   deadlineType,
   todoStatusType,
+  sortOderValueType,
 } from "./types/Index";
 
 import { MyMemo } from "./components/MyMemo";
@@ -20,51 +20,72 @@ import { FilterByDate } from "./components/FilterByDate";
 import { SortButton } from "./components/SortButton";
 
 const App = () => {
-  const inputClassName =
+  const FORM_INPUT_CLASS_NAME =
     "block bg-white w-full border border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
-
-  let defaultDeadlineEnd = new Date();
-  defaultDeadlineEnd.setDate(defaultDeadlineEnd.getDate() + 7);
-  defaultDeadlineEnd.setMinutes(0); // 初期期限の分は0にしたい
-  const initTodo: todoType = {
+  const DEFAULT_DEADLINE: Date = (function (date) {
+    date.setDate(date.getDate() + 7); // 1週間後
+    date.setMinutes(0); // 初期期限の分は0にしたい
+    return new Date(date);
+  })(new Date());
+  const INIT_TODO: todoType = {
     id: "",
     status: "notStarted",
     title: "",
     detail: "",
     createdAt: new Date(),
     updateAt: new Date(),
-    deadline: new Date(defaultDeadlineEnd),
+    deadline: DEFAULT_DEADLINE,
   };
-  const deadlineKeys = ["year", "month", "date", "hours", "minutes"] as const;
-  const initSortValue: {
-    [key: string]: sortValueType;
+  // const DEADLINE_KEYS = ["year", "month", "date", "hours", "minutes"] as const;
+  const DEADLINE_KEYS: readonly deadlineType[] = [
+    "year",
+    "month",
+    "date",
+    "hours",
+    "minutes",
+  ];
+  // 並び順の初期値
+  const INIT_SORT_ODER: {
+    [key: string]: sortOderValueType;
   } = {
     createdAt: "asc",
     id: "none",
     deadline: "none",
   };
+  // それぞれが、どんな順で並んでいるかよりも、
+  // 何がどんな順で並んでいるかで制御したほうが、参照する楽なのかもしれない。。
+  // ---
+  // const INIT_SORT_ODER: {
+  //   name: "createdAt" | "id" | "deadline";
+  //   oder: "asc" | "desc";
+  // } = {
+  //   name: "createdAt",
+  //   oder: "asc",
+  // };
+  // ---
 
+  // TODOの本体
   const [todoList, setTodoList] = useState(() =>
     localStorage.getItem("todoList")
       ? JSON.parse(localStorage.getItem("todoList") || "")
       : []
   );
-  const [newTodo, setNewTodo] = useState(initTodo);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentTodo, setCurrentTodo] = useState(initTodo);
+  // 表示用のTODO
   const [currentList, setCurrentList] = useState(todoList);
+  const [newTodo, setNewTodo] = useState(INIT_TODO);
+  // 編集中TODO
+  const [currentTodo, setCurrentTodo] = useState(INIT_TODO);
+
   const [filterStatusValue, setFilterStatusValue] =
     useState<todoStatusType>("");
-  // ID名でフィルター
   const [filterIdValue, setFilterIdValue] = useState("");
-  // 日にちでフィルター
-  // 時間まで分秒刻みで設定されるので、不都合がある…
   const [filterDateValues, setFilterDateValues] = useState([
     filterDateSetting(new Date(), 0),
-    filterDateSetting(new Date(defaultDeadlineEnd), 1),
+    filterDateSetting(DEFAULT_DEADLINE, 1),
   ]);
+  const [sortOder, setSortOder] = useState(INIT_SORT_ODER);
+  const [isEditing, setIsEditing] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
-  const [sortValue, setSortValue] = useState(initSortValue);
 
   //-----------------------------
   // 新規のTODO作成時
@@ -105,7 +126,7 @@ const App = () => {
         createdAt: new Date(),
       };
       setTodoList([...todoList, _newTodo]);
-      setNewTodo(initTodo);
+      setNewTodo(INIT_TODO);
     } else {
       alert("TODOを入力してください");
     }
@@ -126,7 +147,7 @@ const App = () => {
   //-----------------------------
   const onClickEdit = (todo: todoType) => {
     setIsEditing(true);
-    setCurrentTodo({ ...initTodo, ...todo }); // 初期のデータからの場合、期限などがない場合があるので初期値に上書き
+    setCurrentTodo({ ...INIT_TODO, ...todo }); // 初期のデータからの場合、期限などがない場合があるので初期値に上書き
   };
   // 編集のキャンセル
   const onClickEditCancel = () => setIsEditing(false);
@@ -174,7 +195,6 @@ const App = () => {
   const onFilterButtonClick = (status: todoStatusType) => {
     const newFilterStatusValue = status.length ? status : "";
     setFilterStatusValue(newFilterStatusValue);
-    setIsFiltering(newFilterStatusValue !== "");
   };
   // ID絞り込みinput操作時
   const onFilterInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +202,6 @@ const App = () => {
     const text = event.target.value.trim().match(/[^\s]+/g);
     const newFilterIdValue = text ? text[0] : "";
     setFilterIdValue(newFilterIdValue);
-    setIsFiltering(newFilterIdValue !== "");
   };
   // 日にちで絞り込み押下時
   const onFilterDateChange = (
@@ -212,12 +231,12 @@ const App = () => {
 
   // ソートボタン押下
   const onClickSort = (type: string) => {
-    let newSortValue = initSortValue;
+    let newSortOder = INIT_SORT_ODER;
     if (type !== "createdAt") {
-      newSortValue.createdAt = "none";
+      newSortOder.createdAt = "none";
     }
-    newSortValue[type] = sortValue[type] === "desc" ? "asc" : "desc";
-    setSortValue(newSortValue);
+    newSortOder[type] = sortOder[type] === "desc" ? "asc" : "desc";
+    setSortOder(newSortOder);
   };
 
   //-----------------------------
@@ -266,6 +285,7 @@ const App = () => {
           (todo: todoType) =>
             todo.id.toLowerCase().indexOf(filterIdValue.toLowerCase()) !== -1
         );
+    setIsFiltering(filterStatusValue !== "" || filterIdValue !== "");
 
     // 日にちで絞り込み
     newCurrentList = newCurrentList.filter((todo: todoType) => {
@@ -279,18 +299,18 @@ const App = () => {
       }
     });
 
-    const sortKey = Object.keys(sortValue).find(
-      (key) => sortValue[key] !== "none"
+    const sortKey = Object.keys(sortOder).find(
+      (key) => sortOder[key] !== "none"
     ) as keyof todoType;
     newCurrentList.sort(function (a: todoType, b: todoType) {
-      if (sortValue[sortKey] === "asc") {
+      if (sortOder[sortKey] === "asc") {
         return a[sortKey] > b[sortKey] ? 1 : -1;
       } else {
         return a[sortKey] > b[sortKey] ? -1 : 1;
       }
     });
     setCurrentList(newCurrentList);
-  }, [todoList, filterStatusValue, filterIdValue, filterDateValues, sortValue]);
+  }, [todoList, filterStatusValue, filterIdValue, filterDateValues, sortOder]);
 
   return (
     <div
@@ -312,7 +332,7 @@ const App = () => {
                 <tr>
                   <th className="bg-gray-100">ステータス</th>
                   <td className="p-2">
-                    {Object.keys(TodoStatus).map((key: string) => (
+                    {Object.keys(TODO_STATUS).map((key: string) => (
                       <label key={key} className="mr-2 cursor-pointer">
                         <input
                           type="radio"
@@ -321,7 +341,7 @@ const App = () => {
                           onChange={onEditTodoStatus}
                           checked={key === currentTodo.status}
                         />
-                        {TodoStatus[key]}
+                        {TODO_STATUS[key]}
                       </label>
                     ))}
                   </td>
@@ -333,7 +353,7 @@ const App = () => {
                       type="text"
                       value={currentTodo.title}
                       onChange={onEditTodoTitle}
-                      className={inputClassName}
+                      className={FORM_INPUT_CLASS_NAME}
                     />
                   </td>
                 </tr>
@@ -343,14 +363,14 @@ const App = () => {
                     <textarea
                       onChange={onEditTodoTextarea}
                       value={currentTodo.detail}
-                      className={inputClassName}
+                      className={FORM_INPUT_CLASS_NAME}
                     ></textarea>
                   </td>
                 </tr>
                 <tr>
                   <th className="bg-gray-100">期限</th>
                   <td className="p-2">
-                    {deadlineKeys.map((keyValue: deadlineType) => (
+                    {DEADLINE_KEYS.map((keyValue: deadlineType) => (
                       <TodoDeadlineInput
                         key={keyValue}
                         inputValueType={keyValue}
@@ -394,7 +414,7 @@ const App = () => {
                 <tr>
                   <th className="bg-gray-100">ステータス</th>
                   <td className="p-2">
-                    {Object.keys(TodoStatus).map((key: string) => (
+                    {Object.keys(TODO_STATUS).map((key: string) => (
                       <label key={key} className="mr-2 cursor-pointer">
                         <input
                           type="radio"
@@ -403,7 +423,7 @@ const App = () => {
                           onChange={onTodoStatusChange}
                           checked={key === newTodo.status}
                         />
-                        {TodoStatus[key]}
+                        {TODO_STATUS[key]}
                       </label>
                     ))}
                   </td>
@@ -413,7 +433,7 @@ const App = () => {
                   <td className="p-2">
                     <label className="relative block">
                       <input
-                        className={inputClassName}
+                        className={FORM_INPUT_CLASS_NAME}
                         placeholder="タイトルを入力"
                         type="text"
                         name="search"
@@ -429,7 +449,7 @@ const App = () => {
                     <textarea
                       onChange={onTodoDetailTextareaChange}
                       value={newTodo.detail}
-                      className={inputClassName}
+                      className={FORM_INPUT_CLASS_NAME}
                       placeholder="詳細情報を入力してください（省略化）"
                     ></textarea>
                   </td>
@@ -443,7 +463,7 @@ const App = () => {
                   </th>
                   <td className="py-2">
                     <div>
-                      {deadlineKeys.map((keyValue: deadlineType) => (
+                      {DEADLINE_KEYS.map((keyValue: deadlineType) => (
                         <TodoDeadlineInput
                           key={keyValue}
                           inputValueType={keyValue}
@@ -470,7 +490,6 @@ const App = () => {
           </form>
         </>
       )}
-
       <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
       <h2 className="text-2xl mb-4">
         TODO一覧　
@@ -483,17 +502,14 @@ const App = () => {
         filterStatusValue={filterStatusValue}
         isFiltering={isFiltering}
       />
-
       <FilterByID
         onInputChange={onFilterInputChange}
         filterIdValue={filterIdValue}
       />
-
       <FilterByDate
         onInputChange={onFilterDateChange}
-        filterDateValue={filterDateValues}
+        filterDateValues={filterDateValues}
       />
-
       <section className="mt-5">
         <div className="overflow-hidden bg-white border border-slate-300 sm:rounded-lg">
           <table className="w-full text-left">
@@ -503,7 +519,7 @@ const App = () => {
                   <SortButton
                     labelName="ID"
                     typeName="id"
-                    sortValue={sortValue}
+                    sortOder={sortOder}
                     onClickButton={onClickSort}
                   />
                 </th>
@@ -514,7 +530,7 @@ const App = () => {
                   <SortButton
                     labelName="期限"
                     typeName="deadline"
-                    sortValue={sortValue}
+                    sortOder={sortOder}
                     onClickButton={onClickSort}
                   />
                 </th>
@@ -522,7 +538,7 @@ const App = () => {
                   <SortButton
                     labelName="作成"
                     typeName="createdAt"
-                    sortValue={sortValue}
+                    sortOder={sortOder}
                     onClickButton={onClickSort}
                   />
                 </th>
@@ -546,9 +562,34 @@ const App = () => {
               ) : (
                 <tr>
                   <td colSpan={8} className="px-4 py-5 sm:px-6 text-center">
-                    {isFiltering
-                      ? `${TodoStatus[filterStatusValue]}のTODOはありません。`
-                      : "TODOを入力してください。"}
+                    {todoList.length ? (
+                      <>
+                        <p>絞り込み条件に一致するTODOはありません。</p>
+
+                        <dl className="mt-4">
+                          <dt>▼▼▼検索条件▼▼▼</dt>
+                          <dd>
+                            <ul>
+                              <li>
+                                {filterStatusValue &&
+                                  `ステータス：「${TODO_STATUS[filterStatusValue]}`}
+                              </li>
+                              <li>
+                                {filterIdValue.length > 0 &&
+                                  `IDに「${filterIdValue}」を含む`}
+                              </li>
+                              <li>
+                                期限：
+                                {dateFormat(filterDateValues[0])}〜
+                                {dateFormat(filterDateValues[1])}
+                              </li>
+                            </ul>
+                          </dd>
+                        </dl>
+                      </>
+                    ) : (
+                      <>TODOを作成してください。</>
+                    )}
                   </td>
                 </tr>
               )}

@@ -1,4 +1,4 @@
-import { TodoStatus } from "../constants/Index";
+import { TODO_STATUS } from "../constants/Index";
 import { displayDate } from "../function/Index";
 import { todoType, todoStatusType } from "../types/Index";
 
@@ -17,7 +17,7 @@ export const Todo = (props: {
       }
     >
       <td className="px-3.5 py-1.5">{props.todo.id}</td>
-      <td className="px-3.5 py-1.5">{TodoStatus[props.todo.status]}</td>
+      <td className="px-3.5 py-1.5">{TODO_STATUS[props.todo.status]}</td>
       <td className="px-3.5 py-1.5">{props.todo.title}</td>
       <td
         className={

@@ -37,7 +37,7 @@ export const FilterByStatus = (props: {
           <button
             type="button"
             className={
-              !props.isFiltering
+              props.filterStatusValue === ""
                 ? buttonGroupButtonClassNameL + buttonGroupButtonClassNameHover
                 : buttonGroupButtonClassNameL + defaultStyle
             }
@@ -65,7 +65,7 @@ export const FilterByStatus = (props: {
             }
             onClick={() => props.onClickButton("doing")}
           >
-            着手
+            進行中
           </button>
           <button
             type="button"
