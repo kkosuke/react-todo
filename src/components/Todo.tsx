@@ -1,4 +1,4 @@
-import { TodoStatus } from "../constants/TodoStatus";
+import { TodoStatus } from "../constants/Index";
 import { displayDate } from "../function/Index";
 import { todoType, todoStatusType } from "../types/Index";
 

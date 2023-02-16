@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./index.css";
 
-import { TodoStatus } from "./constants/TodoStatus";
+import { TodoStatus } from "./constants/Index";
 import { filterDateSetting } from "./function/Index";
 import {
   todoType,
