@@ -8,13 +8,13 @@ export const TodoDeadlineInput = (props: {
     deadline: deadlineType
   ) => void;
 }) => {
-  let oneWeekLetter = new Date();
-  oneWeekLetter.setDate(oneWeekLetter.getDate() + 7);
-  oneWeekLetter.setMinutes(0);
-  oneWeekLetter = new Date(oneWeekLetter);
   const deadlineDate = props.todo.deadline
     ? new Date(props.todo.deadline)
-    : oneWeekLetter;
+    : (function (date) {
+        date.setDate(date.getDate() + 7); // 1週間後
+        date.setMinutes(0); // 初期期限の分は0にしたい
+        return new Date(date);
+      })(new Date());
 
   const dateInputClassName =
     "bg-white w-18 border ml-2 mr-2 border-slate-300 rounded-md py-2 px-2 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm";
@@ -29,7 +29,7 @@ export const TodoDeadlineInput = (props: {
       settings.placeholder = "月";
       settings.min = 1;
       settings.max = 12;
-      settings.v = deadlineDate.getMonth() + 1;
+      settings.v = deadlineDate.getMonth() + 1; // 表示時は、+1しないといけない。
       break;
     case "date":
       settings.placeholder = "日";
