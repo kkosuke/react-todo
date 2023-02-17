@@ -153,9 +153,7 @@ const App = () => {
     setIsEditing(true);
     setCurrentTodo({ ...INIT_TODO, ...todo }); // 初期のデータからの場合、期限などがない場合があるので初期値に上書き
   };
-  // 編集のキャンセル
   const onClickEditCancel = () => setIsEditing(false);
-
   const onEditTodoStatus = (event: React.ChangeEvent<HTMLInputElement>) =>
     setCurrentTodo({
       ...currentTodo,
@@ -177,13 +175,13 @@ const App = () => {
         Number(event.target.value)
       ),
     });
-  // 編集完了ボタンを押下したら、操作中のidを既存のtodoと差し替える
   const onEditSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const newCurrentTodo = {
       ...currentTodo,
       updateAt: new Date(),
     };
+    // 編集完了ボタンを押下したら、操作中のidを既存のTODOと差し替える
     const updatedItem = todoList.map((todo: todoType) =>
       todo.id === currentTodo.id ? newCurrentTodo : todo
     );
@@ -233,7 +231,9 @@ const App = () => {
     }
   };
 
-  // ソートボタン押下
+  //-----------------------------
+  // 並び替え
+  //-----------------------------
   const onClickSort = (type: string) => {
     let newSortOder = INIT_SORT_ODER;
     if (type !== "createdAt") {
@@ -244,9 +244,9 @@ const App = () => {
   };
 
   //-----------------------------
-  // 変換
+  // TODOの編集時や、絞り込み、並び順変更時に発動
+  // TODO本体をベースに、操作状況に合わせて表示TODOを選出する。
   //-----------------------------
-
   useEffect(() => {
     let newCurrentList = todoList;
     localStorage.setItem("todoList", JSON.stringify(todoList));
