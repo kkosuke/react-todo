@@ -3,7 +3,11 @@ import { v4 as uuidv4 } from "uuid";
 import "./index.css";
 
 import { TODO_STATUS } from "./constants/Index";
-import { dateFormat, filterDateSetting } from "./function/Index";
+import {
+  dateFormat,
+  filterDateSetting,
+  generateDeadline,
+} from "./function/Index";
 import {
   todoType,
   deadlineType,
@@ -242,30 +246,6 @@ const App = () => {
   //-----------------------------
   // 変換
   //-----------------------------
-  const generateDeadline = (
-    deadlineDate: Date,
-    updateType: deadlineType,
-    updateValue: number
-  ) => {
-    switch (updateType) {
-      case "year":
-        deadlineDate.setFullYear(updateValue);
-        break;
-      case "month":
-        deadlineDate.setMonth(updateValue); // jsで受け取り、jsで返すので+-などはしない
-        break;
-      case "date":
-        deadlineDate.setDate(updateValue);
-        break;
-      case "hours":
-        deadlineDate.setHours(updateValue);
-        break;
-      case "minutes":
-        deadlineDate.setMinutes(updateValue);
-        break;
-    }
-    return new Date(deadlineDate);
-  };
 
   useEffect(() => {
     let newCurrentList = todoList;

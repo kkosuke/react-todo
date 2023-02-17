@@ -1,3 +1,5 @@
+import { deadlineType } from "../types/Index";
+
 export const displayDate = (dateFormat: Date) => {
   if (dateFormat) {
     dateFormat = new Date(dateFormat);
@@ -28,4 +30,29 @@ export const dateFormat = (date: Date) => {
   let d = String(date.getDate());
   d = d.length < 2 ? "0" + d : d;
   return date.getFullYear() + "-" + m + "-" + d;
+};
+
+export const generateDeadline = (
+  deadlineDate: Date,
+  updateType: deadlineType,
+  updateValue: number
+) => {
+  switch (updateType) {
+    case "year":
+      deadlineDate.setFullYear(updateValue);
+      break;
+    case "month":
+      deadlineDate.setMonth(updateValue); // jsで受け取り、jsで返すので+-などはしない
+      break;
+    case "date":
+      deadlineDate.setDate(updateValue);
+      break;
+    case "hours":
+      deadlineDate.setHours(updateValue);
+      break;
+    case "minutes":
+      deadlineDate.setMinutes(updateValue);
+      break;
+  }
+  return new Date(deadlineDate);
 };
